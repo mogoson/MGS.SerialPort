@@ -35,7 +35,7 @@ namespace Developer.SerialPort
         private string writeText = string.Empty;
         private Vector2 scrollPosition;
         private SerialPortController controller;
-        private char[] separater = {'\x0020'};
+        private char[] separater = { '\x0020' };
         #endregion
 
         #region Private Method
@@ -84,13 +84,13 @@ namespace Developer.SerialPort
             {
                 string error;
                 if (controller.OpenSerialPort(out error))
-                    Debug.Log("Succeed.");
+                    Debug.Log("Open Succeed.");
             }
             if (GUILayout.Button("Close"))
             {
                 string error;
                 if (controller.CloseSerialPort(out error))
-                    Debug.Log("Succeed.");
+                    Debug.Log("Close Succeed.");
             }
             GUILayout.EndHorizontal();
 
@@ -100,13 +100,13 @@ namespace Developer.SerialPort
             {
                 string error;
                 if (controller.StartWrite(out error))
-                    Debug.Log("Succeed.");
+                    Debug.Log("Start Write Succeed.");
             }
             if (GUILayout.Button("Stop"))
             {
                 string error;
                 if (controller.StopWrite(out error))
-                    Debug.Log("Succeed.");
+                    Debug.Log("Stop Write Succeed.");
             }
             if (GUILayout.Button("Clear"))
                 writeText = string.Empty;
@@ -117,13 +117,13 @@ namespace Developer.SerialPort
             {
                 string error;
                 if (controller.StartRead(out error))
-                    Debug.Log("Succeed.");
+                    Debug.Log("Start Read Succeed.");
             }
             if (GUILayout.Button("Stop"))
             {
                 string error;
                 if (controller.StopRead(out error))
-                    Debug.Log("Succeed.");
+                    Debug.Log("Stop Read Succeed.");
             }
             if (GUILayout.Button("Clear"))
                 readText = string.Empty;

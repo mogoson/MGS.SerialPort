@@ -83,7 +83,7 @@ namespace Developer.SerialPort
                 error = string.Empty;
                 return true;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 error = e.Message;
                 Debug.LogError(error);

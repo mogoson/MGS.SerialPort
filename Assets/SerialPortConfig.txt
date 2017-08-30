@@ -1,0 +1,17 @@
+PortName: COM1
+BaudRate: 9600
+Parity: 0
+DataBits: 8
+Stopbits: 1
+ReadBufferSize: 4096
+WriteBufferSize: 4096
+ReadTimeout: 500
+WriteTimeout: 500
+ReadHead: FE
+ReadTail: FF
+WriteHead: FE
+WriteTail: FF
+ReadCount: 10
+WriteCount: 10
+ReadCycle: 250
+WriteCycle: 250
