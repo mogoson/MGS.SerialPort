@@ -109,13 +109,13 @@ namespace Developer.SerialPort
             //Initialise bytes array.
             readBytes = new byte[config.readCount];
             writeBytes = new byte[config.writeCount];
-        }//Awake()_end
+        }
 
         protected virtual void OnApplicationQuit()
         {
             string error;
             CloseSerialPort(out error);
-        }//OnApp...()_end
+        }
 
         /// <summary>
         /// Read bytes from serialport.
@@ -145,7 +145,7 @@ namespace Developer.SerialPort
                     for (; index < count; index++)
                     {
                         readBuffer.Add(buffer[index]);
-                    }//for()_end
+                    }
 
                     //Check readBuffer is enough for frame bytes.
                     while (readBuffer.Count >= frame)
@@ -163,8 +163,8 @@ namespace Developer.SerialPort
                         else
                             //Remove the invalid byte.
                             readBuffer.RemoveAt(0);
-                    }//while()_end
-                }//try_end
+                    }
+                }
                 catch (Exception e)
                 {
                     if (e.GetType() == typeof(TimeoutException))
@@ -176,8 +176,8 @@ namespace Developer.SerialPort
                         readThread.Abort();
                     }
                 }
-            }//while()_end
-        }//ReadBytes()_end
+            }
+        }
 
         /// <summary>
         /// Write bytes to serialport.
@@ -217,8 +217,8 @@ namespace Developer.SerialPort
                         writeThread.Abort();
                     }
                 }
-            }//while()_end
-        }//WriteBytes()_end
+            }
+        }
         #endregion
 
         #region Public Method
@@ -241,7 +241,7 @@ namespace Developer.SerialPort
                 Debug.LogError(error);
                 return false;
             }
-        }//OpenS...()_end
+        }
 
         /// <summary>
         /// Close serialport.
@@ -273,7 +273,7 @@ namespace Developer.SerialPort
                 Debug.LogError(error);
                 return false;
             }
-        }//CloseS...()_end
+        }
 
         /// <summary>
         /// Start thread to read.
@@ -314,7 +314,7 @@ namespace Developer.SerialPort
                 Debug.LogError(error);
                 return false;
             }
-        }//StartRead()_end
+        }
 
         /// <summary>
         /// Stop thread of read.
@@ -336,7 +336,7 @@ namespace Developer.SerialPort
                 Debug.LogError(error);
                 return false;
             }
-        }//StoptRead()_end
+        }
 
         /// <summary>
         /// Start thread to write.
@@ -373,7 +373,7 @@ namespace Developer.SerialPort
                 Debug.LogError(error);
                 return false;
             }
-        }//StartWrite()_end
+        }
 
         /// <summary>
         /// Stop thread of write.
@@ -395,7 +395,7 @@ namespace Developer.SerialPort
                 Debug.LogError(error);
                 return false;
             }
-        }//StopWrite()_end
+        }
         #endregion
-    }//class_end
-}//namespace_end
+    }
+}

@@ -39,7 +39,7 @@ namespace Developer.SerialPort
             string error;
             configurer = GetComponent<SerialPortConfigurer>();
             configurer.ReadConfig(out config, out error);
-        }//Start()_end
+        }
 
         void OnGUI()
         {
@@ -76,7 +76,7 @@ namespace Developer.SerialPort
             if (GUILayout.Button("Commit"))
                 configurer.WriteConfig(config);
             GUILayout.EndArea();
-        }//OnGUI()_end
+        }
         #endregion
-    }//class_end
-}//namespace_end
+    }
+}

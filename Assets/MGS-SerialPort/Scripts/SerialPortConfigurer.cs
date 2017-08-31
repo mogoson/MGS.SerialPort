@@ -89,7 +89,7 @@ namespace Developer.SerialPort
                 Debug.LogError(error);
                 return false;
             }
-        }//ReadConfig()_end
+        }
 
         /// <summary>
         /// Write serialport config to file.
@@ -117,7 +117,7 @@ namespace Developer.SerialPort
                 "WriteCycle: " + config.writeCycle
             };
             File.WriteAllLines(configPath, configTextLines, Encoding.Default);
-        }//WriteConfig()_end
+        }
         #endregion
-    }//class_end
-}//namespace_end
+    }
+}

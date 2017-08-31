@@ -72,8 +72,8 @@ namespace Developer.SerialPort
             this.writeTail = writeTail;
             this.writeCount = writeCount;
             this.writeCycle = writeCycle;
-        }//Config()_end
+        }
 
         public static SerialPortConfig Default { get { return new SerialPortConfig("COM1", 9600, Parity.None, 8, StopBits.One); } }
-    }//struct_end
-}//namespace_end
+    }
+}

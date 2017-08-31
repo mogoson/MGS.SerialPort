@@ -42,7 +42,7 @@ namespace Developer.SerialPort
         void Start()
         {
             controller = GetComponent<SerialPortController>();
-        }//Start()_end
+        }
 
         void Update()
         {
@@ -72,7 +72,7 @@ namespace Developer.SerialPort
                 }
                 controller.writeBytes = writeBuffer.ToArray();
             }
-        }//Update()_end
+        }
 
         void OnGUI()
         {
@@ -130,7 +130,7 @@ namespace Developer.SerialPort
             GUILayout.EndHorizontal();
             GUILayout.TextArea(readText, GUILayout.ExpandHeight(true));
             GUILayout.EndArea();
-        }//OnGUI()_end
+        }
         #endregion
-    }//class_end
-}//namespace_end
+    }
+}
