@@ -33,9 +33,5 @@
 
 ![SerialPortConfig](./Attachments/SerialportWriteAndRead.png)
 
-- SerialPort HUD
-
-![SerialPortHUD](./Attachments/SerialPortHUD.png)
-
 ## Contact
 - If you have anny questions, fell free to contact me at mogoson@qq.com.

@@ -74,9 +74,5 @@
 
 ![SerialPortConfig](./Attachments/SerialportWriteAndRead.png)
 
-- SerialPort HUD
-
-![SerialPortHUD](./Attachments/SerialPortHUD.png)
-
 ## 联系
 - 如果你有任何问题或者建议，欢迎通过mogoson@qq.com联系我。
