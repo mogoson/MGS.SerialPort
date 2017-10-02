@@ -1,20 +1,20 @@
 /*************************************************************************
- *  Copyright (C), 2017-2018, Mogoson tech. Co., Ltd.
- *  FileName: SerialPortControllerUI.cs
- *  Author: Mogoson   Version: 1.0   Date: 4/5/2017
+ *  Copyright (C), 2017-2018, Mogoson Tech. Co., Ltd.
+ *  FileName: SerialPortControllerHUD.cs
+ *  Author: Mogoson   Version: 0.1.0   Date: 4/5/2017
  *  Version Description:
  *    Internal develop version,mainly to achieve its function.
  *  File Description:
  *    Ignore.
  *  Class List:
  *    <ID>           <name>             <description>
- *     1.    SerialPortControllerUI        Ignore.
+ *     1.    SerialPortControllerHUD       Ignore.
  *  Function List:
  *    <class ID>     <name>             <description>
  *     1.
  *  History:
  *    <ID>    <author>      <time>      <version>      <description>
- *     1.     Mogoson     4/5/2017       1.0        Build this file.
+ *     1.     Mogoson     4/5/2017        0.1.0       Create this file.
  *************************************************************************/
 
 namespace Developer.SerialPort
@@ -25,26 +25,26 @@ namespace Developer.SerialPort
     using UnityEngine;
 
     [RequireComponent(typeof(SerialPortController))]
-    [AddComponentMenu("Developer/SerialPort/SerialPortControllerUI")]
-    public class SerialPortControllerUI : MonoBehaviour
+    [AddComponentMenu("Developer/SerialPort/SerialPortControllerHUD")]
+    public class SerialPortControllerHUD : MonoBehaviour
     {
         #region Property and Field
         public float xOffset = 10;
         public float yOffset = 10;
+
+        private SerialPortController controller;
         private string readText = string.Empty;
         private string writeText = string.Empty;
-        private Vector2 scrollPosition;
-        private SerialPortController controller;
         private char[] separater = { '\x0020' };
         #endregion
 
         #region Private Method
-        void Start()
+        private void Start()
         {
             controller = GetComponent<SerialPortController>();
         }
 
-        void Update()
+        private void Update()
         {
             if (controller.isReading)
             {
@@ -74,60 +74,88 @@ namespace Developer.SerialPort
             }
         }
 
-        void OnGUI()
+        private void OnGUI()
         {
-            var rect = new Rect(xOffset, yOffset, 180, 250);
-            GUILayout.BeginArea(rect, "Manager", "Window");
+            var rect = new Rect(xOffset, yOffset, 180, 220);
+            GUILayout.BeginArea(rect, "Controller", "Window");
 
             GUILayout.BeginHorizontal();
-            if (GUILayout.Button("Open"))
+            if (GUILayout.Button("Initialise"))
             {
                 string error;
-                if (controller.OpenSerialPort(out error))
-                    Debug.Log("Open Succeed.");
+                if (controller.InitialiseSerialPort(out error))
+                    Debug.Log("Initialise Succeed.");
+                else
+                    Debug.LogWarning("Initialise with default config. error : " + error);
             }
-            if (GUILayout.Button("Close"))
+            if (controller.isOpen)
             {
-                string error;
-                if (controller.CloseSerialPort(out error))
-                    Debug.Log("Close Succeed.");
+                if (GUILayout.Button("Close"))
+                {
+                    string error;
+                    if (controller.CloseSerialPort(out error))
+                        Debug.Log("Close Succeed.");
+                }
+            }
+            else
+            {
+                if (GUILayout.Button("Open"))
+                {
+                    string error;
+                    if (controller.OpenSerialPort(out error))
+                        Debug.Log("Open Succeed.");
+                }
             }
             GUILayout.EndHorizontal();
 
             writeText = GUILayout.TextArea(writeText, GUILayout.Height(50));
+
             GUILayout.BeginHorizontal();
-            if (GUILayout.Button("StartWrite"))
+            if (controller.isWriting)
             {
-                string error;
-                if (controller.StartWrite(out error))
-                    Debug.Log("Start Write Succeed.");
+                if (GUILayout.Button("StopWrite"))
+                {
+                    string error;
+                    if (controller.StopWrite(out error))
+                        Debug.Log("Stop Write Succeed.");
+                }
             }
-            if (GUILayout.Button("Stop"))
+            else
             {
-                string error;
-                if (controller.StopWrite(out error))
-                    Debug.Log("Stop Write Succeed.");
+                if (GUILayout.Button("StartWrite"))
+                {
+                    string error;
+                    if (controller.StartWrite(out error))
+                        Debug.Log("Start Write Succeed.");
+                }
             }
             if (GUILayout.Button("Clear"))
                 writeText = string.Empty;
             GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
-            if (GUILayout.Button("StartRead"))
+            if (controller.isReading)
             {
-                string error;
-                if (controller.StartRead(out error))
-                    Debug.Log("Start Read Succeed.");
+                if (GUILayout.Button("StopRead"))
+                {
+                    string error;
+                    if (controller.StopRead(out error))
+                        Debug.Log("Stop Read Succeed.");
+                }
             }
-            if (GUILayout.Button("Stop"))
+            else
             {
-                string error;
-                if (controller.StopRead(out error))
-                    Debug.Log("Stop Read Succeed.");
+                if (GUILayout.Button("StartRead"))
+                {
+                    string error;
+                    if (controller.StartRead(out error))
+                        Debug.Log("Start Read Succeed.");
+                }
             }
             if (GUILayout.Button("Clear"))
                 readText = string.Empty;
             GUILayout.EndHorizontal();
+
             GUILayout.TextArea(readText, GUILayout.ExpandHeight(true));
             GUILayout.EndArea();
         }

@@ -1,7 +1,7 @@
 /*************************************************************************
- *  Copyright (C), 2017-2018, Mogoson tech. Co., Ltd.
+ *  Copyright (C), 2017-2018, Mogoson Tech. Co., Ltd.
  *  FileName: SerialPortController.cs
- *  Author: Mogoson   Version: 1.0   Date: 4/5/2017
+ *  Author: Mogoson   Version: 0.1.0   Date: 4/5/2017
  *  Version Description:
  *    Internal develop version,mainly to achieve its function.
  *  File Description:
@@ -14,7 +14,7 @@
  *     1.
  *  History:
  *    <ID>    <author>      <time>      <version>      <description>
- *     1.     Mogoson     4/5/2017       1.0        Build this file.
+ *     1.     Mogoson     4/5/2017       0.1.0        Create this file.
  *************************************************************************/
 
 namespace Developer.SerialPort
@@ -93,28 +93,20 @@ namespace Developer.SerialPort
         #region Protected Method
         protected virtual void Awake()
         {
-            //Initialise serialport.
             string error;
-            configurer.ReadConfig(out config, out error);
-            serialPort = new SerialPort(config.portName, config.baudRate, config.parity, config.dataBits, config.stopBits);
-            serialPort.ReadBufferSize = config.readBufferSize;
-            serialPort.ReadTimeout = config.readTimeout;
-            serialPort.WriteBufferSize = config.writeBufferSize;
-            serialPort.WriteTimeout = config.writeTimeout;
-
-            //Initialise thread.
-            readThread = new Thread(ReadBytes);
-            writeThread = new Thread(WriteBytes);
-
-            //Initialise bytes array.
-            readBytes = new byte[config.readCount];
-            writeBytes = new byte[config.writeCount];
+            if (InitialiseSerialPort(out error))
+                Debug.Log("Initialise Succeed.");
+            else
+                Debug.LogWarning("Initialise with default config. error : " + error);
         }
 
         protected virtual void OnApplicationQuit()
         {
             string error;
-            CloseSerialPort(out error);
+            if (CloseSerialPort(out error))
+                Debug.Log("Close Succeed.");
+            else
+                Debug.LogError(error);
         }
 
         /// <summary>
@@ -128,15 +120,15 @@ namespace Developer.SerialPort
                 Thread.Sleep(config.readCycle);
                 try
                 {
-                    //SerialPort.BytesToRead can not get in Unity3D.
+                    //SerialPort.BytesToRead can not get in Unity.
                     //Try to read all bytes of the SerialPort ReadBuffer to avoid delay.
-                    //[So SerialPort.ReadBuffer should be try to set small in the config file to reduce memory spending.]
+                    //So SerialPort.ReadBuffer should be try to set small in the config file to reduce memory spending.
                     var buffer = new byte[serialPort.ReadBufferSize];
                     var count = serialPort.Read(buffer, 0, buffer.Length);
 
                     //Frame bytes length is config.readCount + 2(readHead + readTail).
                     //Calculate the last index of double frame bytes to avoid delay.
-                    //[Under normal circumstances, bouble frame bytes affirm contain a intact frame bytes.]
+                    //Under normal circumstances, bouble frame bytes affirm contain a intact frame bytes.
                     var frame = config.readCount + 2;
                     var index = count - 2 * frame;
                     index = index > 0 ? index : 0;
@@ -204,7 +196,7 @@ namespace Developer.SerialPort
                         serialPort.Write(writeBuffer, 0, writeBuffer.Length);
                     }
                     else
-                        Debug.LogWarning("WriteBytes length not match config.");
+                        Debug.LogWarning("Length of writeBytes is not match config.");
                 }
                 catch (Exception e)
                 {
@@ -222,6 +214,33 @@ namespace Developer.SerialPort
         #endregion
 
         #region Public Method
+        /// <summary>
+        /// Initialise serialport.
+        /// </summary>
+        /// <param name="error">Error message</param>
+        /// <returns>Initialise normal.</returns>
+        public virtual bool InitialiseSerialPort(out string error)
+        {
+            //Read comfig and initialise serialport.
+            var normal = configurer.ReadConfig(out config, out error);
+            serialPort = new SerialPort(config.portName, config.baudRate, config.parity, config.dataBits, config.stopBits);
+            serialPort.ReadBufferSize = config.readBufferSize;
+            serialPort.ReadTimeout = config.readTimeout;
+            serialPort.WriteBufferSize = config.writeBufferSize;
+            serialPort.WriteTimeout = config.writeTimeout;
+
+            //Initialise thread.
+            readThread = new Thread(ReadBytes);
+            writeThread = new Thread(WriteBytes);
+
+            //Initialise bytes array.
+            readBytes = new byte[config.readCount];
+            writeBytes = new byte[config.writeCount];
+
+            //Return state.
+            return normal;
+        }
+
         /// <summary>
         /// Open serialport.
         /// </summary>
@@ -300,8 +319,8 @@ namespace Developer.SerialPort
             }
             try
             {
-                //[SerialPort.DiscardInBuffer can not work in Unity3D.]
-                //[Do not do it is ok.]
+                //SerialPort.DiscardInBuffer can not work in Unity.
+                //Do not do it is ok.
 
                 loopRead = true;
                 readThread.Start();
@@ -359,8 +378,8 @@ namespace Developer.SerialPort
             }
             try
             {
-                //[SerialPort.DiscardOutBuffer can not work in Unity3D.]
-                //[Do not do it is ok.]
+                //SerialPort.DiscardOutBuffer can not work in Unity.
+                //Do not do it is ok.
 
                 loopWrite = true;
                 writeThread.Start();

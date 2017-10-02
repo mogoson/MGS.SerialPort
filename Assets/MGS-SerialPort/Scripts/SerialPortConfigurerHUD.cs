@@ -1,20 +1,20 @@
 /*************************************************************************
- *  Copyright (C), 2017-2018, Mogoson tech. Co., Ltd.
- *  FileName: SerialPortConfigurerUI.cs
- *  Author: Mogoson   Version: 1.0   Date: 4/4/2017
+ *  Copyright (C), 2017-2018, Mogoson Tech. Co., Ltd.
+ *  FileName: SerialPortConfigurerHUD.cs
+ *  Author: Mogoson   Version: 0.1.0   Date: 4/4/2017
  *  Version Description:
  *    Internal develop version,mainly to achieve its function.
  *  File Description:
  *    Ignore.
  *  Class List:
  *    <ID>           <name>             <description>
- *     1.     SerialPortConfigurerUI       Ignore.
+ *     1.    SerialPortConfigurerHUD       Ignore.
  *  Function List:
  *    <class ID>     <name>             <description>
  *     1.
  *  History:
  *    <ID>    <author>      <time>      <version>      <description>
- *     1.     Mogoson     4/4/2017       1.0        Build this file.
+ *     1.     Mogoson     4/4/2017       0.1.0        Create this file.
  *************************************************************************/
 
 namespace Developer.SerialPort
@@ -22,26 +22,27 @@ namespace Developer.SerialPort
     using System.IO.Ports;
     using UnityEngine;
 
-    [AddComponentMenu("Developer/SerialPort/SerialPortConfigurerUI")]
+    [AddComponentMenu("Developer/SerialPort/SerialPortConfigurerHUD")]
     [RequireComponent(typeof(SerialPortConfigurer))]
-    public class SerialPortConfigurerUI : MonoBehaviour
+    public class SerialPortConfigurerHUD : MonoBehaviour
     {
         #region Property and Field
         public float xOffset = 10;
         public float yOffset = 10;
+
         private SerialPortConfigurer configurer;
         private SerialPortConfig config;
         #endregion
 
         #region Private Method
-        void Start()
+        private void Start()
         {
             string error;
             configurer = GetComponent<SerialPortConfigurer>();
             configurer.ReadConfig(out config, out error);
         }
 
-        void OnGUI()
+        private void OnGUI()
         {
             var rect = new Rect(xOffset, yOffset, 180, 180);
             GUILayout.BeginArea(rect, "Configurer", "Window");
@@ -73,8 +74,11 @@ namespace Developer.SerialPort
             GUILayout.Label(config.stopBits.ToString());
             GUILayout.EndHorizontal();
 
-            if (GUILayout.Button("Commit"))
-                configurer.WriteConfig(config);
+            if (GUILayout.Button("Apply"))
+            {
+                string error;
+                configurer.WriteConfig(config, out error);
+            }
             GUILayout.EndArea();
         }
         #endregion
