@@ -34,6 +34,8 @@
     Manage the SerialPortController to control the serialport communicate.
 --------------------------------------------------------------------------
   [Config]
+    The default config file in the path "StreamingAssets\SerialPortConfig.json".
+
     ReadBufferSize should be try to set as a small value to reduce memory
     spending, example 512.
 
