@@ -1,37 +1,32 @@
 /*************************************************************************
  *  Copyright (C), 2017-2018, Mogoson Tech. Co., Ltd.
- *  FileName: SerialPortConfigurer.cs
- *  Author: Mogoson   Version: 0.1.0   Date: 4/4/2017
- *  Version Description:
- *    Internal develop version,mainly to achieve its function.
- *  File Description:
- *    Ignore.
- *  Class List:
- *    <ID>           <name>             <description>
- *     1.     SerialPortConfigurer         Ignore.
- *  Function List:
- *    <class ID>     <name>             <description>
- *     1.
- *  History:
- *    <ID>    <author>      <time>      <version>      <description>
- *     1.     Mogoson     4/4/2017        0.1.0       Create this file.
+ *------------------------------------------------------------------------
+ *  File         :  SerialPortConfigurer.cs
+ *  Description  :  Read config from local file and write config to
+ *                  local file.
+ *------------------------------------------------------------------------
+ *  Author       :  Mogoson
+ *  Version      :  0.1.0
+ *  Date         :  4/4/2017
+ *  Description  :  Initial development version.
  *************************************************************************/
 
-namespace Developer.SerialPort
-{
-    using System;
-    using System.IO;
-    using System.Text;
-    using UnityEngine;
+using Newtonsoft.Json;
+using System;
+using System.IO;
+using System.Text;
+using UnityEngine;
 
 #if UNITY_EDITOR
-    using UnityEditor;
+using UnityEditor;
 #endif
 
+namespace Developer.IO.Ports
+{
     /// <summary>
     /// Configurer of SerialPort.
     /// </summary>
-    [AddComponentMenu("Developer/SerialPort/SerialPortConfigurer")]
+    [AddComponentMenu("Developer/IO/Ports/SerialPortConfigurer")]
     public class SerialPortConfigurer : MonoBehaviour
     {
         #region Property and Field
@@ -59,7 +54,7 @@ namespace Developer.SerialPort
             try
             {
                 var json = File.ReadAllText(configPath, Encoding.Default);
-                config = JsonUtility.FromJson<SerialPortConfig>(json);
+                config = JsonConvert.DeserializeObject<SerialPortConfig>(json);
                 error = string.Empty;
                 return true;
             }
@@ -81,7 +76,7 @@ namespace Developer.SerialPort
         {
             try
             {
-                var configJson = JsonUtility.ToJson(config);
+                var configJson = JsonConvert.SerializeObject(config);
                 File.WriteAllText(configPath, configJson, Encoding.Default);
 #if UNITY_EDITOR
                 AssetDatabase.Refresh();

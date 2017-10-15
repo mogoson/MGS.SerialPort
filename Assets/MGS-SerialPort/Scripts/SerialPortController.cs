@@ -1,31 +1,24 @@
 /*************************************************************************
  *  Copyright (C), 2017-2018, Mogoson Tech. Co., Ltd.
- *  FileName: SerialPortController.cs
- *  Author: Mogoson   Version: 0.1.0   Date: 4/5/2017
- *  Version Description:
- *    Internal develop version,mainly to achieve its function.
- *  File Description:
- *    Ignore.
- *  Class List:
- *    <ID>           <name>             <description>
- *     1.     SerialPortController         Ignore.
- *  Function List:
- *    <class ID>     <name>             <description>
- *     1.
- *  History:
- *    <ID>    <author>      <time>      <version>      <description>
- *     1.     Mogoson     4/5/2017       0.1.0        Create this file.
+ *------------------------------------------------------------------------
+ *  File         :  SerialPortController.cs
+ *  Description  :  Synchronous read and write serialport data.
+ *------------------------------------------------------------------------
+ *  Author       :  Mogoson
+ *  Version      :  0.1.0
+ *  Date         :  4/5/2017
+ *  Description  :  Initial development version.
  *************************************************************************/
 
-namespace Developer.SerialPort
-{
-    using System;
-    using System.Collections.Generic;
-    using System.IO.Ports;
-    using System.Threading;
-    using UnityEngine;
+using System;
+using System.Collections.Generic;
+using System.IO.Ports;
+using System.Threading;
+using UnityEngine;
 
-    [AddComponentMenu("Developer/SerialPort/SerialPortController")]
+namespace Developer.IO.Ports
+{
+    [AddComponentMenu("Developer/IO/Ports/SerialPortController")]
     public class SerialPortController : MonoBehaviour
     {
         #region Property and Field

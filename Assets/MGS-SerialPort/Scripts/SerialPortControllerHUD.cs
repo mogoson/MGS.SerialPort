@@ -1,31 +1,24 @@
 /*************************************************************************
  *  Copyright (C), 2017-2018, Mogoson Tech. Co., Ltd.
- *  FileName: SerialPortControllerHUD.cs
- *  Author: Mogoson   Version: 0.1.0   Date: 4/5/2017
- *  Version Description:
- *    Internal develop version,mainly to achieve its function.
- *  File Description:
- *    Ignore.
- *  Class List:
- *    <ID>           <name>             <description>
- *     1.    SerialPortControllerHUD       Ignore.
- *  Function List:
- *    <class ID>     <name>             <description>
- *     1.
- *  History:
- *    <ID>    <author>      <time>      <version>      <description>
- *     1.     Mogoson     4/5/2017        0.1.0       Create this file.
+ *------------------------------------------------------------------------
+ *  File         :  SerialPortControllerHUD.cs
+ *  Description  :  Draw UI in scene to control serialport.
+ *------------------------------------------------------------------------
+ *  Author       :  Mogoson
+ *  Version      :  0.1.0
+ *  Date         :  4/5/2017
+ *  Description  :  Initial development version.
  *************************************************************************/
 
-namespace Developer.SerialPort
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Globalization;
-    using UnityEngine;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using UnityEngine;
 
+namespace Developer.IO.Ports
+{
     [RequireComponent(typeof(SerialPortController))]
-    [AddComponentMenu("Developer/SerialPort/SerialPortControllerHUD")]
+    [AddComponentMenu("Developer/IO/Ports/SerialPortControllerHUD")]
     public class SerialPortControllerHUD : MonoBehaviour
     {
         #region Property and Field

@@ -1,26 +1,19 @@
 /*************************************************************************
  *  Copyright (C), 2017-2018, Mogoson Tech. Co., Ltd.
- *  FileName: SerialPortConfig.cs
- *  Author: Mogoson   Version: 0.1.0   Date: 4/5/2017
- *  Version Description:
- *    Internal develop version,mainly to achieve its function.
- *  File Description:
- *    Ignore.
- *  Class List:
- *    <ID>           <name>             <description>
- *     1        SerialPortConfig           Ignore.
- *  Function List:
- *    <class ID>     <name>             <description>
- *     1.
- *  History:
- *    <ID>    <author>      <time>      <version>      <description>
- *     1.     Mogoson     4/5/2017       0.1.0        Create this file.
+ *------------------------------------------------------------------------
+ *  File         :  SerialPortConfig.cs
+ *  Description  :  Config of serialport parameters.
+ *------------------------------------------------------------------------
+ *  Author       :  Mogoson
+ *  Version      :  0.1.0
+ *  Date         :  4/5/2017
+ *  Description  :  Initial development version.
  *************************************************************************/
 
-namespace Developer.SerialPort
-{
-    using System.IO.Ports;
+using System.IO.Ports;
 
+namespace Developer.IO.Ports
+{
     /// <summary>
     /// Config of SerialPort.
     /// </summary>

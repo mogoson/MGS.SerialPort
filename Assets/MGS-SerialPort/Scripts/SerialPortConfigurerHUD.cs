@@ -1,29 +1,22 @@
 /*************************************************************************
  *  Copyright (C), 2017-2018, Mogoson Tech. Co., Ltd.
- *  FileName: SerialPortConfigurerHUD.cs
- *  Author: Mogoson   Version: 0.1.0   Date: 4/4/2017
- *  Version Description:
- *    Internal develop version,mainly to achieve its function.
- *  File Description:
- *    Ignore.
- *  Class List:
- *    <ID>           <name>             <description>
- *     1.    SerialPortConfigurerHUD       Ignore.
- *  Function List:
- *    <class ID>     <name>             <description>
- *     1.
- *  History:
- *    <ID>    <author>      <time>      <version>      <description>
- *     1.     Mogoson     4/4/2017       0.1.0        Create this file.
+ *------------------------------------------------------------------------
+ *  File         :  SerialPortConfigurerHUD.cs
+ *  Description  :  Draw UI in scene to config serialport parameters.
+ *------------------------------------------------------------------------
+ *  Author       :  Mogoson
+ *  Version      :  0.1.0
+ *  Date         :  4/4/2017
+ *  Description  :  Initial development version.
  *************************************************************************/
 
-namespace Developer.SerialPort
-{
-    using System.IO.Ports;
-    using UnityEngine;
+using System.IO.Ports;
+using UnityEngine;
 
-    [AddComponentMenu("Developer/SerialPort/SerialPortConfigurerHUD")]
+namespace Developer.IO.Ports
+{
     [RequireComponent(typeof(SerialPortConfigurer))]
+    [AddComponentMenu("Developer/IO/Ports/SerialPortConfigurerHUD")]
     public class SerialPortConfigurerHUD : MonoBehaviour
     {
         #region Property and Field
