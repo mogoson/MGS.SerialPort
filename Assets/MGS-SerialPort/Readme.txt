@@ -1,7 +1,7 @@
 ==========================================================================
   Copyright (C), 2017-2018, Mogoson Tech. Co., Ltd.
   Name: MGS-SerialPort
-  Author: Mogoson   Version: 0.1.0   Date: 4/5/2017
+  Author: Mogoson   Version: 0.1.1   Date: 4/5/2017
 ==========================================================================
   [Summary]
     Unity communicate with serialport.
@@ -11,7 +11,7 @@
     config in local file.
 --------------------------------------------------------------------------
   [Environment]
-    Unity 5.0 or above.
+    Unity 5.3 or above.
     .Net Framework 2.0.
 
     If namespace error, set the "Api Compatibility Level" as ".NET 2.0".
