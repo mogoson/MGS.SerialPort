@@ -9,15 +9,9 @@
  *  Version      :  0.1.0
  *  Date         :  4/4/2017
  *  Description  :  Initial development version.
- *------------------------------------------------------------------------
- *  Author       :  Mogoson
- *  Version      :  0.1.1
- *  Date         :  10/15/2017
- *  Description  :  Upgrade for Unity 5.3 or above.
- *                  Abandon Newtonsoft.Json.JsonConvert.
- *                  Use UnityEngine.JsonUtility.
  *************************************************************************/
 
+using Newtonsoft.Json;
 using System;
 using System.IO;
 using System.Text;
@@ -60,7 +54,7 @@ namespace Developer.IO.Ports
             try
             {
                 var json = File.ReadAllText(configPath, Encoding.Default);
-                config = JsonUtility.FromJson<SerialPortConfig>(json);
+                config = JsonConvert.DeserializeObject<SerialPortConfig>(json);
                 error = string.Empty;
                 return true;
             }
@@ -82,7 +76,7 @@ namespace Developer.IO.Ports
         {
             try
             {
-                var configJson = JsonUtility.ToJson(config);
+                var configJson = JsonConvert.SerializeObject(config);
                 File.WriteAllText(configPath, configJson, Encoding.Default);
 #if UNITY_EDITOR
                 AssetDatabase.Refresh();
