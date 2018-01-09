@@ -15,7 +15,6 @@ using UnityEngine;
 
 namespace Developer.IO.Ports
 {
-    [RequireComponent(typeof(SerialPortConfigurer))]
     [AddComponentMenu("Developer/IO/Ports/SerialPortConfigurerHUD")]
     public class SerialPortConfigurerHUD : MonoBehaviour
     {
@@ -23,16 +22,14 @@ namespace Developer.IO.Ports
         public float xOffset = 10;
         public float yOffset = 10;
 
-        private SerialPortConfigurer configurer;
         private SerialPortConfig config;
         #endregion
 
         #region Private Method
         private void Start()
         {
-            string error;
-            configurer = GetComponent<SerialPortConfigurer>();
-            configurer.ReadConfig(out config, out error);
+            var error = string.Empty;
+            SerialPortConfigurer.ReadConfig(out config, out error);
         }
 
         private void OnGUI()
@@ -69,8 +66,8 @@ namespace Developer.IO.Ports
 
             if (GUILayout.Button("Apply"))
             {
-                string error;
-                configurer.WriteConfig(config, out error);
+                var error = string.Empty;
+                SerialPortConfigurer.WriteConfig(config, out error);
             }
             GUILayout.EndArea();
         }

@@ -17,7 +17,6 @@ using UnityEngine;
 
 namespace Developer.IO.Ports
 {
-    [RequireComponent(typeof(SerialPortController))]
     [AddComponentMenu("Developer/IO/Ports/SerialPortControllerHUD")]
     public class SerialPortControllerHUD : MonoBehaviour
     {
@@ -25,30 +24,26 @@ namespace Developer.IO.Ports
         public float xOffset = 10;
         public float yOffset = 10;
 
-        private SerialPortController controller;
         private string readText = string.Empty;
         private string writeText = string.Empty;
         private char[] separater = { '\x0020' };
+
+        private SerialPortController Controller { get { return SerialPortManager.Instance; } }
         #endregion
 
         #region Private Method
-        private void Start()
-        {
-            controller = GetComponent<SerialPortController>();
-        }
-
         private void Update()
         {
-            if (controller.isReading)
+            if (Controller.IsReading)
             {
                 var readString = string.Empty;
-                foreach (var @byte in controller.readBytes)
+                foreach (var @byte in Controller.ReadBytes)
                 {
                     readString += @byte.ToString("X2") + "\x0020";
                 }
                 readText = readString;
             }
-            if (controller.isWriting)
+            if (Controller.IsWriting)
             {
                 var writeBuffer = new List<byte>();
                 var bytesString = writeText.Split(separater, StringSplitOptions.RemoveEmptyEntries);
@@ -63,7 +58,7 @@ namespace Developer.IO.Ports
                         Debug.LogError(e.Message);
                     }
                 }
-                controller.writeBytes = writeBuffer.ToArray();
+                Controller.WriteBytes = writeBuffer.ToArray();
             }
         }
 
@@ -75,18 +70,18 @@ namespace Developer.IO.Ports
             GUILayout.BeginHorizontal();
             if (GUILayout.Button("Initialise"))
             {
-                string error;
-                if (controller.InitialiseSerialPort(out error))
+                var error = string.Empty;
+                if (Controller.InitialiseSerialPort(out error))
                     Debug.Log("Initialise Succeed.");
                 else
                     Debug.LogWarning("Initialise with default config. error : " + error);
             }
-            if (controller.isOpen)
+            if (Controller.IsOpen)
             {
                 if (GUILayout.Button("Close"))
                 {
-                    string error;
-                    if (controller.CloseSerialPort(out error))
+                    var error = string.Empty;
+                    if (Controller.CloseSerialPort(out error))
                         Debug.Log("Close Succeed.");
                 }
             }
@@ -94,8 +89,8 @@ namespace Developer.IO.Ports
             {
                 if (GUILayout.Button("Open"))
                 {
-                    string error;
-                    if (controller.OpenSerialPort(out error))
+                    var error = string.Empty;
+                    if (Controller.OpenSerialPort(out error))
                         Debug.Log("Open Succeed.");
                 }
             }
@@ -104,12 +99,12 @@ namespace Developer.IO.Ports
             writeText = GUILayout.TextArea(writeText, GUILayout.Height(50));
 
             GUILayout.BeginHorizontal();
-            if (controller.isWriting)
+            if (Controller.IsWriting)
             {
                 if (GUILayout.Button("StopWrite"))
                 {
-                    string error;
-                    if (controller.StopWrite(out error))
+                    var error = string.Empty;
+                    if (Controller.StopWrite(out error))
                         Debug.Log("Stop Write Succeed.");
                 }
             }
@@ -117,8 +112,8 @@ namespace Developer.IO.Ports
             {
                 if (GUILayout.Button("StartWrite"))
                 {
-                    string error;
-                    if (controller.StartWrite(out error))
+                    var error = string.Empty;
+                    if (Controller.StartWrite(out error))
                         Debug.Log("Start Write Succeed.");
                 }
             }
@@ -127,12 +122,12 @@ namespace Developer.IO.Ports
             GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
-            if (controller.isReading)
+            if (Controller.IsReading)
             {
                 if (GUILayout.Button("StopRead"))
                 {
-                    string error;
-                    if (controller.StopRead(out error))
+                    var error = string.Empty;
+                    if (Controller.StopRead(out error))
                         Debug.Log("Stop Read Succeed.");
                 }
             }
@@ -140,8 +135,8 @@ namespace Developer.IO.Ports
             {
                 if (GUILayout.Button("StartRead"))
                 {
-                    string error;
-                    if (controller.StartRead(out error))
+                    var error = string.Empty;
+                    if (Controller.StartRead(out error))
                         Debug.Log("Start Read Succeed.");
                 }
             }

@@ -9,15 +9,9 @@
  *  Version      :  0.1.0
  *  Date         :  4/4/2017
  *  Description  :  Initial development version.
- *------------------------------------------------------------------------
- *  Author       :  Mogoson
- *  Version      :  0.1.1
- *  Date         :  10/15/2017
- *  Description  :  Upgrade for Unity 5.3 or above.
- *                  Abandon Newtonsoft.Json.JsonConvert.
- *                  Use UnityEngine.JsonUtility.
  *************************************************************************/
 
+using Newtonsoft.Json;
 using System;
 using System.IO;
 using System.Text;
@@ -32,19 +26,13 @@ namespace Developer.IO.Ports
     /// <summary>
     /// Configurer of SerialPort.
     /// </summary>
-    [AddComponentMenu("Developer/IO/Ports/SerialPortConfigurer")]
-    public class SerialPortConfigurer : MonoBehaviour
+    public static class SerialPortConfigurer
     {
         #region Property and Field
         /// <summary>
-        /// Config file of serialport.
-        /// </summary>
-        public string configFile = "SerialPortConfig.json";
-
-        /// <summary>
         /// Full path of serialport config file.
         /// </summary>
-        protected string configPath { get { return Application.streamingAssetsPath + "/" + configFile; } }
+        public static string ConfigPath { get { return Application.streamingAssetsPath + "/Config/SerialPortConfig.json"; } }
         #endregion
 
         #region Public Method
@@ -54,13 +42,13 @@ namespace Developer.IO.Ports
         /// <param name="config">Config of serialport.</param>
         /// <param name="error">Error message.</param>
         /// <returns>Succeed read.</returns>
-        public virtual bool ReadConfig(out SerialPortConfig config, out string error)
+        public static bool ReadConfig(out SerialPortConfig config, out string error)
         {
             config = new SerialPortConfig();
             try
             {
-                var json = File.ReadAllText(configPath, Encoding.Default);
-                config = JsonUtility.FromJson<SerialPortConfig>(json);
+                var json = File.ReadAllText(ConfigPath, Encoding.Default);
+                config = JsonConvert.DeserializeObject<SerialPortConfig>(json);
                 error = string.Empty;
                 return true;
             }
@@ -78,12 +66,12 @@ namespace Developer.IO.Ports
         /// <param name="config">Config of serialport.</param>
         /// <param name="error">Error message.</param>
         /// <returns>Succeed write.</returns>
-        public virtual bool WriteConfig(SerialPortConfig config, out string error)
+        public static bool WriteConfig(SerialPortConfig config, out string error)
         {
             try
             {
-                var configJson = JsonUtility.ToJson(config);
-                File.WriteAllText(configPath, configJson, Encoding.Default);
+                var configJson = JsonConvert.SerializeObject(config);
+                File.WriteAllText(ConfigPath, configJson, Encoding.Default);
 #if UNITY_EDITOR
                 AssetDatabase.Refresh();
 #endif
