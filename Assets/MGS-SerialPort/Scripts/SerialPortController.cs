@@ -81,19 +81,13 @@ namespace Developer.IO.Ports
         protected virtual void Awake()
         {
             var error = string.Empty;
-            if (InitialiseSerialPort(out error))
-                Debug.Log("Initialise Succeed.");
-            else
-                Debug.LogWarning("Initialise with default config. error : " + error);
+            InitialiseSerialPort(out error);
         }
 
         protected virtual void OnDestroy()
         {
             var error = string.Empty;
-            if (CloseSerialPort(out error))
-                Debug.Log("Close Succeed.");
-            else
-                Debug.LogError(error);
+            CloseSerialPort(out error);
         }
 
         /// <summary>
@@ -105,55 +99,63 @@ namespace Developer.IO.Ports
             while (loopRead)
             {
                 Thread.Sleep(config.readCycle);
+
+                //SerialPort.BytesToRead can not get in Unity.
+                //Try to read all bytes of the SerialPort ReadBuffer to avoid delay.
+                //So SerialPort.ReadBufferSize should be try to set small in the config file to reduce memory spending.
+                var buffer = new byte[serialPort.ReadBufferSize];
+                var count = 0;
+
                 try
                 {
-                    //SerialPort.BytesToRead can not get in Unity.
-                    //Try to read all bytes of the SerialPort ReadBuffer to avoid delay.
-                    //So SerialPort.ReadBuffer should be try to set small in the config file to reduce memory spending.
-                    var buffer = new byte[serialPort.ReadBufferSize];
-                    var count = serialPort.Read(buffer, 0, buffer.Length);
-
-                    //Frame bytes length is config.readCount + 2(readHead + readTail).
-                    //Calculate the last index of double frame bytes to avoid delay.
-                    //Under normal circumstances, bouble frame bytes affirm contain a intact frame bytes.
-                    var frame = config.readCount + 2;
-                    var index = count - 2 * frame;
-                    index = index > 0 ? index : 0;
-
-                    //Add select bytes to readBuffer.
-                    for (; index < count; index++)
-                    {
-                        readBuffer.Add(buffer[index]);
-                    }
-
-                    //Check readBuffer is enough for frame bytes.
-                    while (readBuffer.Count >= frame)
-                    {
-                        //Find readHead.
-                        if (readBuffer[0] == config.readHead)
-                        {
-                            //Find readTail, save the intact bytes to readBytes.
-                            if (readBuffer[frame - 1] == config.readTail)
-                                ReadBytes = readBuffer.GetRange(1, config.readCount).ToArray();
-
-                            //Remove the obsolete or invalid frame bytes.
-                            readBuffer.RemoveRange(0, frame);
-                        }
-                        else
-                            //Remove the invalid byte.
-                            readBuffer.RemoveAt(0);
-                    }
+                    //Read bytes from serialport.
+                    count = serialPort.Read(buffer, 0, buffer.Length);
                 }
                 catch (Exception e)
                 {
                     if (e.GetType() == typeof(TimeoutException))
+                    {
                         Debug.Log(e.Message);
+                        continue;
+                    }
                     else
                     {
                         Debug.LogError(e.Message);
                         loopRead = false;
                         readThread.Abort();
+                        break;
                     }
+                }
+
+                //Frame bytes length is config.readCount + 2(readHead + readTail).
+                //Calculate the last index of double frame bytes to avoid delay.
+                //Under normal circumstances, bouble frame bytes affirm contain a intact frame bytes.
+                var frame = config.readCount + 2;
+                var index = count - 2 * frame;
+                index = index > 0 ? index : 0;
+
+                //Add select bytes to readBuffer.
+                for (; index < count; index++)
+                {
+                    readBuffer.Add(buffer[index]);
+                }
+
+                //Check readBuffer is enough for frame bytes.
+                while (readBuffer.Count >= frame)
+                {
+                    //Find readHead.
+                    if (readBuffer[0] == config.readHead)
+                    {
+                        //Find readTail, save the intact bytes to readBytes.
+                        if (readBuffer[frame - 1] == config.readTail)
+                            ReadBytes = readBuffer.GetRange(1, config.readCount).ToArray();
+
+                        //Remove the obsolete or invalid frame bytes.
+                        readBuffer.RemoveRange(0, frame);
+                    }
+                    else
+                        //Remove the invalid byte.
+                        readBuffer.RemoveAt(0);
                 }
             }
         }
@@ -166,36 +168,39 @@ namespace Developer.IO.Ports
             while (loopWrite)
             {
                 Thread.Sleep(config.writeCycle);
-                try
+
+                //writeBytes length match config.
+                if (WriteBytes.Length == config.writeCount)
                 {
-                    //writeBytes length match config.
-                    if (WriteBytes.Length == config.writeCount)
+                    //writeBuffer length is config.writeCount + 2(writeHead + writeTail).
+                    var writeBuffer = new byte[config.writeCount + 2];
+
+                    //Add writeHead and writeTail to writeBuffer.
+                    writeBuffer[0] = config.writeHead;
+                    writeBuffer[config.writeCount + 1] = config.writeTail;
+
+                    //Add writeBytes to writeBuffer.
+                    WriteBytes.CopyTo(writeBuffer, 1);
+
+                    try
                     {
-                        //writeBuffer length is config.writeCount + 2(writeHead + writeTail).
-                        var writeBuffer = new byte[config.writeCount + 2];
-
-                        //Add writeHead and writeTail to writeBuffer.
-                        writeBuffer[0] = config.writeHead;
-                        writeBuffer[config.writeCount + 1] = config.writeTail;
-
-                        //Add writeBytes to writeBuffer and write it to serialport.
-                        WriteBytes.CopyTo(writeBuffer, 1);
+                        //Write writeBuffer to serialport
                         serialPort.Write(writeBuffer, 0, writeBuffer.Length);
                     }
-                    else
-                        Debug.LogWarning("Length of writeBytes is not match config.");
-                }
-                catch (Exception e)
-                {
-                    if (e.GetType() == typeof(TimeoutException))
-                        Debug.Log(e.Message);
-                    else
+                    catch (Exception e)
                     {
-                        Debug.LogError(e.Message);
-                        loopWrite = false;
-                        writeThread.Abort();
+                        if (e.GetType() == typeof(TimeoutException))
+                            Debug.Log(e.Message);
+                        else
+                        {
+                            Debug.LogError(e.Message);
+                            loopWrite = false;
+                            writeThread.Abort();
+                        }
                     }
                 }
+                else
+                    Debug.LogWarning("Length of writeBytes is not match config.");
             }
         }
         #endregion
@@ -210,11 +215,13 @@ namespace Developer.IO.Ports
         {
             //Read comfig and initialise serialport.
             var normal = SerialPortConfigurer.ReadConfig(out config, out error);
-            serialPort = new SerialPort(config.portName, config.baudRate, config.parity, config.dataBits, config.stopBits);
-            serialPort.ReadBufferSize = config.readBufferSize;
-            serialPort.ReadTimeout = config.readTimeout;
-            serialPort.WriteBufferSize = config.writeBufferSize;
-            serialPort.WriteTimeout = config.writeTimeout;
+            serialPort = new SerialPort(config.portName, config.baudRate, config.parity, config.dataBits, config.stopBits)
+            {
+                ReadBufferSize = config.readBufferSize,
+                ReadTimeout = config.readTimeout,
+                WriteBufferSize = config.writeBufferSize,
+                WriteTimeout = config.writeTimeout
+            };
 
             //Initialise thread.
             readThread = new Thread(ReadBytesFromBuffer);
@@ -223,6 +230,11 @@ namespace Developer.IO.Ports
             //Initialise bytes array.
             ReadBytes = new byte[config.readCount];
             WriteBytes = new byte[config.writeCount];
+
+            if (normal)
+                Debug.Log("Initialise Succeed.");
+            else
+                Debug.LogWarning("Initialise with default config. error : " + error);
 
             //Return state.
             return normal;
@@ -239,6 +251,7 @@ namespace Developer.IO.Ports
             {
                 serialPort.Open();
                 error = string.Empty;
+                Debug.Log("Open Succeed.");
                 return true;
             }
             catch (Exception e)
@@ -271,6 +284,7 @@ namespace Developer.IO.Ports
             {
                 serialPort.Close();
                 error = string.Empty;
+                Debug.Log("Close Succeed.");
                 return true;
             }
             catch (Exception e)
@@ -312,6 +326,7 @@ namespace Developer.IO.Ports
                 loopRead = true;
                 readThread.Start();
                 error = string.Empty;
+                Debug.Log("Start Read Succeed.");
                 return true;
             }
             catch (Exception e)
@@ -334,6 +349,7 @@ namespace Developer.IO.Ports
                 loopRead = false;
                 readThread.Abort();
                 error = string.Empty;
+                Debug.Log("Stop Read Succeed.");
                 return true;
             }
             catch (Exception e)
@@ -371,6 +387,7 @@ namespace Developer.IO.Ports
                 loopWrite = true;
                 writeThread.Start();
                 error = string.Empty;
+                Debug.Log("Start Write Succeed.");
                 return true;
             }
             catch (Exception e)
@@ -393,6 +410,7 @@ namespace Developer.IO.Ports
                 loopWrite = false;
                 writeThread.Abort();
                 error = string.Empty;
+                Debug.Log("Stop Write Succeed.");
                 return true;
             }
             catch (Exception e)

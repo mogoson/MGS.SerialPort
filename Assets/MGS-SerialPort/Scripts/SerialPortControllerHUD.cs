@@ -26,7 +26,9 @@ namespace Developer.IO.Ports
 
         private string readText = string.Empty;
         private string writeText = string.Empty;
-        private char[] separater = { '\x0020' };
+
+        private const string space = "\x0020";
+        private readonly string[] separater = { space };
 
         private SerialPortController Controller { get { return SerialPortManager.Instance; } }
         #endregion
@@ -39,7 +41,7 @@ namespace Developer.IO.Ports
                 var readString = string.Empty;
                 foreach (var @byte in Controller.ReadBytes)
                 {
-                    readString += @byte.ToString("X2") + "\x0020";
+                    readString += @byte.ToString("X2") + space;
                 }
                 readText = readString;
             }
@@ -71,18 +73,14 @@ namespace Developer.IO.Ports
             if (GUILayout.Button("Initialise"))
             {
                 var error = string.Empty;
-                if (Controller.InitialiseSerialPort(out error))
-                    Debug.Log("Initialise Succeed.");
-                else
-                    Debug.LogWarning("Initialise with default config. error : " + error);
+                Controller.InitialiseSerialPort(out error);
             }
             if (Controller.IsOpen)
             {
                 if (GUILayout.Button("Close"))
                 {
                     var error = string.Empty;
-                    if (Controller.CloseSerialPort(out error))
-                        Debug.Log("Close Succeed.");
+                    Controller.CloseSerialPort(out error);
                 }
             }
             else
@@ -90,8 +88,7 @@ namespace Developer.IO.Ports
                 if (GUILayout.Button("Open"))
                 {
                     var error = string.Empty;
-                    if (Controller.OpenSerialPort(out error))
-                        Debug.Log("Open Succeed.");
+                    Controller.OpenSerialPort(out error);
                 }
             }
             GUILayout.EndHorizontal();
@@ -104,8 +101,7 @@ namespace Developer.IO.Ports
                 if (GUILayout.Button("StopWrite"))
                 {
                     var error = string.Empty;
-                    if (Controller.StopWrite(out error))
-                        Debug.Log("Stop Write Succeed.");
+                    Controller.StopWrite(out error);
                 }
             }
             else
@@ -113,8 +109,7 @@ namespace Developer.IO.Ports
                 if (GUILayout.Button("StartWrite"))
                 {
                     var error = string.Empty;
-                    if (Controller.StartWrite(out error))
-                        Debug.Log("Start Write Succeed.");
+                    Controller.StartWrite(out error);
                 }
             }
             if (GUILayout.Button("Clear"))
@@ -127,8 +122,7 @@ namespace Developer.IO.Ports
                 if (GUILayout.Button("StopRead"))
                 {
                     var error = string.Empty;
-                    if (Controller.StopRead(out error))
-                        Debug.Log("Stop Read Succeed.");
+                    Controller.StopRead(out error);
                 }
             }
             else
@@ -136,8 +130,7 @@ namespace Developer.IO.Ports
                 if (GUILayout.Button("StartRead"))
                 {
                     var error = string.Empty;
-                    if (Controller.StartRead(out error))
-                        Debug.Log("Start Read Succeed.");
+                    Controller.StartRead(out error);
                 }
             }
             if (GUILayout.Button("Clear"))

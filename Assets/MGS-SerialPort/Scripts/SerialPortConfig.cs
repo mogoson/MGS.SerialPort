@@ -10,6 +10,7 @@
  *  Description  :  Initial development version.
  *************************************************************************/
 
+using System;
 using System.IO.Ports;
 
 namespace Developer.IO.Ports
@@ -17,6 +18,7 @@ namespace Developer.IO.Ports
     /// <summary>
     /// Config of SerialPort.
     /// </summary>
+    [Serializable]
     public class SerialPortConfig
     {
         public string portName = "COM1";
