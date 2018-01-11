@@ -70,10 +70,10 @@ namespace Developer.IO.Ports
             GUILayout.BeginArea(rect, "Controller", "Window");
 
             GUILayout.BeginHorizontal();
-            if (GUILayout.Button("Initialise"))
+            if (GUILayout.Button("ReInitialize"))
             {
                 var error = string.Empty;
-                Controller.InitialiseSerialPort(out error);
+                Controller.ReInitializeSerialPort(out error);
             }
             if (Controller.IsOpen)
             {

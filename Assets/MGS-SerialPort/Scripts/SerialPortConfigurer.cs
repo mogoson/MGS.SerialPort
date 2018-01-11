@@ -50,7 +50,7 @@ namespace Developer.IO.Ports
         /// </summary>
         /// <param name="config">Config of serialport.</param>
         /// <param name="error">Error message.</param>
-        /// <returns>Succeed read.</returns>
+        /// <returns>Read config succeed.</returns>
         public static bool ReadConfig(out SerialPortConfig config, out string error)
         {
             config = new SerialPortConfig();
@@ -62,9 +62,6 @@ namespace Developer.IO.Ports
 #else
                 config = JsonConvert.DeserializeObject<SerialPortConfig>(json);
 #endif
-                error = string.Empty;
-                Debug.Log("Read config succeed.");
-                return true;
             }
             catch (Exception e)
             {
@@ -72,6 +69,10 @@ namespace Developer.IO.Ports
                 Debug.LogError(error);
                 return false;
             }
+
+            error = string.Empty;
+            Debug.Log("Read config succeed.");
+            return true;
         }
 
         /// <summary>
@@ -79,7 +80,7 @@ namespace Developer.IO.Ports
         /// </summary>
         /// <param name="config">Config of serialport.</param>
         /// <param name="error">Error message.</param>
-        /// <returns>Succeed write.</returns>
+        /// <returns>Write config succeed..</returns>
         public static bool WriteConfig(SerialPortConfig config, out string error)
         {
             try
@@ -90,12 +91,6 @@ namespace Developer.IO.Ports
                 var configJson = JsonConvert.SerializeObject(config);
 #endif
                 File.WriteAllText(ConfigPath, configJson, ConfigEncoding);
-#if UNITY_EDITOR
-                AssetDatabase.Refresh();
-#endif
-                error = string.Empty;
-                Debug.Log("Write config succeed.");
-                return true;
             }
             catch (Exception e)
             {
@@ -103,6 +98,13 @@ namespace Developer.IO.Ports
                 Debug.LogError(error);
                 return false;
             }
+
+#if UNITY_EDITOR
+            AssetDatabase.Refresh();
+#endif
+            error = string.Empty;
+            Debug.Log("Write config succeed.");
+            return true;
         }
         #endregion
     }

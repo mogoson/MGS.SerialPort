@@ -47,16 +47,6 @@ namespace Developer.IO.Ports
         public bool IsWriting { get { return writeThread.IsAlive; } }
 
         /// <summary>
-        /// Loop read bytes from serialport.
-        /// </summary>
-        protected bool loopRead;
-
-        /// <summary>
-        /// Loop write bytes to serialport.
-        /// </summary>
-        protected bool loopWrite;
-
-        /// <summary>
         /// Target serialport of manager.
         /// </summary>
         protected SerialPort serialPort;
@@ -81,7 +71,7 @@ namespace Developer.IO.Ports
         protected virtual void Awake()
         {
             var error = string.Empty;
-            InitialiseSerialPort(out error);
+            InitializeSerialPort(out error);
         }
 
         protected virtual void OnDestroy()
@@ -91,12 +81,46 @@ namespace Developer.IO.Ports
         }
 
         /// <summary>
+        /// Initialize serialport.
+        /// </summary>
+        /// <param name="error">Error message.</param>
+        /// <returns>Initialize normal.</returns>
+        protected virtual bool InitializeSerialPort(out string error)
+        {
+            //Read comfig and initialize serialport.
+            var normal = SerialPortConfigurer.ReadConfig(out config, out error);
+            serialPort = new SerialPort(config.portName, config.baudRate, config.parity, config.dataBits, config.stopBits)
+            {
+                ReadBufferSize = config.readBufferSize,
+                ReadTimeout = config.readTimeout,
+                WriteBufferSize = config.writeBufferSize,
+                WriteTimeout = config.writeTimeout
+            };
+
+            //Initialize thread.
+            readThread = new Thread(ReadBytesFromBuffer);
+            writeThread = new Thread(WriteBytesToBuffer);
+
+            //Initialize bytes array.
+            ReadBytes = new byte[config.readCount];
+            WriteBytes = new byte[config.writeCount];
+
+            if (normal)
+                Debug.Log("Initialize Succeed.");
+            else
+                Debug.LogWarning("Initialize with default config. error : " + error);
+
+            //Return state.
+            return normal;
+        }
+
+        /// <summary>
         /// Read bytes from serialport buffer.
         /// </summary>
         protected virtual void ReadBytesFromBuffer()
         {
             var readBuffer = new List<byte>();
-            while (loopRead)
+            while (true)
             {
                 Thread.Sleep(config.readCycle);
 
@@ -121,7 +145,6 @@ namespace Developer.IO.Ports
                     else
                     {
                         Debug.LogError(e.Message);
-                        loopRead = false;
                         readThread.Abort();
                         break;
                     }
@@ -165,7 +188,7 @@ namespace Developer.IO.Ports
         /// </summary>
         protected virtual void WriteBytesToBuffer()
         {
-            while (loopWrite)
+            while (true)
             {
                 Thread.Sleep(config.writeCycle);
 
@@ -194,7 +217,6 @@ namespace Developer.IO.Ports
                         else
                         {
                             Debug.LogError(e.Message);
-                            loopWrite = false;
                             writeThread.Abort();
                         }
                     }
@@ -207,37 +229,19 @@ namespace Developer.IO.Ports
 
         #region Public Method
         /// <summary>
-        /// Initialise serialport.
+        /// ReInitialize serialport.
         /// </summary>
-        /// <param name="error">Error message</param>
-        /// <returns>Initialise normal.</returns>
-        public virtual bool InitialiseSerialPort(out string error)
+        /// <param name="error">Error message.</param>
+        /// <returns>ReInitialize succeeded.</returns>
+        public virtual bool ReInitializeSerialPort(out string error)
         {
-            //Read comfig and initialise serialport.
-            var normal = SerialPortConfigurer.ReadConfig(out config, out error);
-            serialPort = new SerialPort(config.portName, config.baudRate, config.parity, config.dataBits, config.stopBits)
+            if (CloseSerialPort(out error))
             {
-                ReadBufferSize = config.readBufferSize,
-                ReadTimeout = config.readTimeout,
-                WriteBufferSize = config.writeBufferSize,
-                WriteTimeout = config.writeTimeout
-            };
-
-            //Initialise thread.
-            readThread = new Thread(ReadBytesFromBuffer);
-            writeThread = new Thread(WriteBytesToBuffer);
-
-            //Initialise bytes array.
-            ReadBytes = new byte[config.readCount];
-            WriteBytes = new byte[config.writeCount];
-
-            if (normal)
-                Debug.Log("Initialise Succeed.");
+                InitializeSerialPort(out error);
+                return true;
+            }
             else
-                Debug.LogWarning("Initialise with default config. error : " + error);
-
-            //Return state.
-            return normal;
+                return false;
         }
 
         /// <summary>
@@ -250,9 +254,6 @@ namespace Developer.IO.Ports
             try
             {
                 serialPort.Open();
-                error = string.Empty;
-                Debug.Log("Open Succeed.");
-                return true;
             }
             catch (Exception e)
             {
@@ -260,6 +261,10 @@ namespace Developer.IO.Ports
                 Debug.LogError(error);
                 return false;
             }
+
+            error = string.Empty;
+            Debug.Log("Open Succeed.");
+            return true;
         }
 
         /// <summary>
@@ -283,9 +288,6 @@ namespace Developer.IO.Ports
             try
             {
                 serialPort.Close();
-                error = string.Empty;
-                Debug.Log("Close Succeed.");
-                return true;
             }
             catch (Exception e)
             {
@@ -293,6 +295,10 @@ namespace Developer.IO.Ports
                 Debug.LogError(error);
                 return false;
             }
+
+            error = string.Empty;
+            Debug.Log("Close Succeed.");
+            return true;
         }
 
         /// <summary>
@@ -323,11 +329,7 @@ namespace Developer.IO.Ports
                 //SerialPort.DiscardInBuffer can not work in Unity.
                 //Do not do it is ok.
 
-                loopRead = true;
                 readThread.Start();
-                error = string.Empty;
-                Debug.Log("Start Read Succeed.");
-                return true;
             }
             catch (Exception e)
             {
@@ -335,6 +337,10 @@ namespace Developer.IO.Ports
                 Debug.LogError(error);
                 return false;
             }
+
+            error = string.Empty;
+            Debug.Log("Start Read Succeed.");
+            return true;
         }
 
         /// <summary>
@@ -346,11 +352,7 @@ namespace Developer.IO.Ports
         {
             try
             {
-                loopRead = false;
                 readThread.Abort();
-                error = string.Empty;
-                Debug.Log("Stop Read Succeed.");
-                return true;
             }
             catch (Exception e)
             {
@@ -358,6 +360,10 @@ namespace Developer.IO.Ports
                 Debug.LogError(error);
                 return false;
             }
+
+            error = string.Empty;
+            Debug.Log("Stop Read Succeed.");
+            return true;
         }
 
         /// <summary>
@@ -384,11 +390,7 @@ namespace Developer.IO.Ports
                 //SerialPort.DiscardOutBuffer can not work in Unity.
                 //Do not do it is ok.
 
-                loopWrite = true;
                 writeThread.Start();
-                error = string.Empty;
-                Debug.Log("Start Write Succeed.");
-                return true;
             }
             catch (Exception e)
             {
@@ -396,6 +398,10 @@ namespace Developer.IO.Ports
                 Debug.LogError(error);
                 return false;
             }
+
+            error = string.Empty;
+            Debug.Log("Start Write Succeed.");
+            return true;
         }
 
         /// <summary>
@@ -407,11 +413,7 @@ namespace Developer.IO.Ports
         {
             try
             {
-                loopWrite = false;
                 writeThread.Abort();
-                error = string.Empty;
-                Debug.Log("Stop Write Succeed.");
-                return true;
             }
             catch (Exception e)
             {
@@ -419,6 +421,10 @@ namespace Developer.IO.Ports
                 Debug.LogError(error);
                 return false;
             }
+
+            error = string.Empty;
+            Debug.Log("Stop Write Succeed.");
+            return true;
         }
         #endregion
     }
