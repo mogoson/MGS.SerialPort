@@ -8,7 +8,7 @@
 - 串口数据同步读取，持续写入；串口参数通过本地文件配置（便于安装调试和后续维护）。
 
 ## 环境
-- Unity 5.0 或更高版本。
+- Unity 5.0 或更高版本（如果是Unity5.3或者更高版本，Json插件Newtonsoft.Json.dll可以删除）。
 - .Net Framework 2.0（项目打包设置“Build Settings -> Player Settings -> Other Settings”
   ->“Api Compatibility Level” 项设置为 ".NET 2.0"）。
 
@@ -44,13 +44,13 @@
 1. 读取整个缓冲区Buffer，并获取读取到的字节数Count；事实上，如果程序运行内存吃紧且收发
    周期基本一致，那么单次可以只从缓冲区读取1个数据帧长度（ReadCount+2）的字节以节约内
    存开销，读者可根据自己的需求自行修改。
-1. 如果Count不超过2个数据帧则数据没有延迟，直接将读取到的字节数据(Buffer的前Count个字节)
+2. 如果Count不超过2个数据帧则数据没有延迟，直接将读取到的字节数据(Buffer的前Count个字节)
    添加到一个ReadBuffer列表；否则数据有延迟冗余，将读取到的字节数据(Buffer的前Count个字节)
    的后2个数据帧长度的字节数据添加到ReadBuffer列表；因为正常情况下，2个数据帧长度的连
    续字节数据必然包含一个完整的数据帧。继续。
-1. 检查ReadBuffer的长度，如果小于1个数据帧长度则返回步骤1；如果大于或等于1个数据帧长度
+3. 检查ReadBuffer的长度，如果小于1个数据帧长度则返回步骤1；如果大于或等于1个数据帧长度
    （有可能包含一个完整的数据帧），继续。
-1. 检查ReadBuffer，如果第一个字节不等于ReadHead标记，则删除这个无效字节，返回步骤3；如
+4. 检查ReadBuffer，如果第一个字节不等于ReadHead标记，则删除这个无效字节，返回步骤3；如
    果第一个字节等于ReadHead标记，则检查第1个数据帧长度位置的字节，如果等于ReadTail标记
    则找到一个完整的数据帧，将ReadBuffer前1个数据帧长度的字节存入ReadBytes，至此，缓冲
    区中由串口发来的最近一个完整数据帧已读取到；否则数据无效；现在ReadBuffer的前1个数据
@@ -59,12 +59,13 @@
 #### 写入
 1. 检查WriteBytes，长度不等于WriteCount则返回（避免WriteBytes被误操作重新初始化为其他长
    度的数组时，向串口写入错误的字节数据）；如果长度等于WriteCount，继续。
-1. 在WriteBytes前面添加WiteHead标记，后面添加WriteTail标记，将其写入串口；返回步骤1。
+2. 在WriteBytes前面添加WiteHead标记，后面添加WriteTail标记，将其写入串口；返回步骤1。
 
 ## 实现
 - SerialPortConfig：结构化存储串口参数配置。
 - SerialPortConfigurer：串口参数配置写入本地文件，从文件读取配置。
 - SerialPortController：串口同步读取，持续写入。
+- SerialPortManager : 统一管理串口控制器。
 
 ## 案例
 - “MGS-SerialPort\Scenes”目录下存有上述功能的演示案例，供读者参考。
