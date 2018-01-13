@@ -33,9 +33,9 @@
 - Demos in the path "MGS-SerialPort\Scenes" provide reference to you.
 
 ## Preview
-- Serialport Write And Read
+- Serialport
 
-![SerialPortConfig](./Attachments/README_Image/SerialportWriteAndRead.png)
+![Serialport](./Attachments/README_Image/Serialport.png)
 
 ## Contact
 - If you have any questions, feel free to contact me at mogoson@qq.com.

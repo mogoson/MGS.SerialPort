@@ -71,9 +71,9 @@
 - “MGS-SerialPort\Scenes”目录下存有上述功能的演示案例，供读者参考。
 
 ## 预览
-- Serialport Write And Read
+- Serialport
 
-![SerialPortConfig](./Attachments/README_Image/SerialportWriteAndRead.png)
+![Serialport](./Attachments/README_Image/Serialport.png)
 
 ## 联系
 - 如果你有任何问题或者建议，欢迎通过mogoson@qq.com联系我。
