@@ -119,17 +119,19 @@ namespace Developer.IO.Ports
         /// </summary>
         protected virtual void ReadBytesFromBuffer()
         {
+            //SerialPort.BytesToRead can not get in Unity.
+            //Try to read all bytes of the SerialPort ReadBuffer to avoid delay.
+            //So SerialPort.ReadBufferSize should be try to set small in the config file to reduce memory spending.
+            var buffer = new byte[serialPort.ReadBufferSize];
+            var count = 0;
+
+            //Frame bytes length is config.readCount + 2(readHead + readTail).
+            var frame = config.readCount + 2;
+            var index = 0;
             var readBuffer = new List<byte>();
+
             while (true)
             {
-                Thread.Sleep(config.readCycle);
-
-                //SerialPort.BytesToRead can not get in Unity.
-                //Try to read all bytes of the SerialPort ReadBuffer to avoid delay.
-                //So SerialPort.ReadBufferSize should be try to set small in the config file to reduce memory spending.
-                var buffer = new byte[serialPort.ReadBufferSize];
-                var count = 0;
-
                 try
                 {
                     //Read bytes from serialport.
@@ -150,11 +152,9 @@ namespace Developer.IO.Ports
                     }
                 }
 
-                //Frame bytes length is config.readCount + 2(readHead + readTail).
                 //Calculate the last index of double frame bytes to avoid delay.
                 //Under normal circumstances, bouble frame bytes affirm contain a intact frame bytes.
-                var frame = config.readCount + 2;
-                var index = count - 2 * frame;
+                index = count - 2 * frame;
                 index = index > 0 ? index : 0;
 
                 //Add select bytes to readBuffer.
@@ -180,6 +180,8 @@ namespace Developer.IO.Ports
                         //Remove the invalid byte.
                         readBuffer.RemoveAt(0);
                 }
+
+                Thread.Sleep(config.readCycle);
             }
         }
 
@@ -188,16 +190,14 @@ namespace Developer.IO.Ports
         /// </summary>
         protected virtual void WriteBytesToBuffer()
         {
+            //writeBuffer length is config.writeCount + 2(writeHead + writeTail).
+            var writeBuffer = new byte[config.writeCount + 2];
+
             while (true)
             {
-                Thread.Sleep(config.writeCycle);
-
                 //writeBytes length match config.
                 if (WriteBytes.Length == config.writeCount)
                 {
-                    //writeBuffer length is config.writeCount + 2(writeHead + writeTail).
-                    var writeBuffer = new byte[config.writeCount + 2];
-
                     //Add writeHead and writeTail to writeBuffer.
                     writeBuffer[0] = config.writeHead;
                     writeBuffer[config.writeCount + 1] = config.writeTail;
@@ -223,6 +223,8 @@ namespace Developer.IO.Ports
                 }
                 else
                     Debug.LogWarning("Length of writeBytes is not match config.");
+
+                Thread.Sleep(config.writeCycle);
             }
         }
         #endregion
@@ -328,7 +330,7 @@ namespace Developer.IO.Ports
             {
                 //SerialPort.DiscardInBuffer can not work in Unity.
                 //Do not do it is ok.
-
+                serialPort.DiscardInBuffer();
                 readThread.Start();
             }
             catch (Exception e)
@@ -389,7 +391,7 @@ namespace Developer.IO.Ports
             {
                 //SerialPort.DiscardOutBuffer can not work in Unity.
                 //Do not do it is ok.
-
+                serialPort.DiscardOutBuffer();
                 writeThread.Start();
             }
             catch (Exception e)
