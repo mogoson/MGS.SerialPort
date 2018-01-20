@@ -38,12 +38,19 @@ namespace Developer.IO.Ports
         {
             if (Controller.IsReading)
             {
-                var readString = string.Empty;
-                foreach (var @byte in Controller.ReadBytes)
+                if (Controller.IsReadTimeout)
                 {
-                    readString += @byte.ToString("X2") + space;
+                    readText = "No serialport device input.";
                 }
-                readText = readString;
+                else
+                {
+                    var readString = string.Empty;
+                    foreach (var @byte in Controller.ReadBytes)
+                    {
+                        readString += @byte.ToString("X2") + space;
+                    }
+                    readText = readString;
+                }
             }
             if (Controller.IsWriting)
             {

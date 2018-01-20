@@ -24,12 +24,24 @@ namespace Developer.IO.Ports
         /// <summary>
         /// Bytes read from serialport.
         /// </summary>
-        public byte[] ReadBytes { protected set; get; }
+        public byte[] ReadBytes { get { return readBytes.Clone() as byte[]; } }
 
         /// <summary>
         /// Bytes write to serialport.
         /// </summary>
-        public byte[] WriteBytes { set; get; }
+        public byte[] WriteBytes
+        {
+            set
+            {
+                if (value == null)
+                    Debug.LogWarning("Value of WriteBytes is null.");
+                else if (value.Length != config.writeCount)
+                    Debug.LogWarning("Value of WriteBytes is not match config length.");
+                else
+                    writeBytes = value.Clone() as byte[];
+            }
+            get { return writeBytes; }
+        }
 
         /// <summary>
         /// SerialPort is open.
@@ -42,12 +54,22 @@ namespace Developer.IO.Ports
         public bool IsReading { get { return readThread.IsAlive; } }
 
         /// <summary>
+        /// Is Timeout reading from serialport.
+        /// </summary>
+        public bool IsReadTimeout { protected set; get; }
+
+        /// <summary>
         /// Is writing to serialport.
         /// </summary>
         public bool IsWriting { get { return writeThread.IsAlive; } }
 
         /// <summary>
-        /// Target serialport of manager.
+        /// Is Timeout writing to serialport.
+        /// </summary>
+        public bool IsWriteTimeout { protected set; get; }
+
+        /// <summary>
+        /// Target serialport of controller.
         /// </summary>
         protected SerialPort serialPort;
 
@@ -57,7 +79,7 @@ namespace Developer.IO.Ports
         protected SerialPortConfig config;
 
         /// <summary>
-        /// Thread to read bytes from serialport..
+        /// Thread to read bytes from serialport.
         /// </summary>
         protected Thread readThread;
 
@@ -65,6 +87,16 @@ namespace Developer.IO.Ports
         /// Thread to write bytes to serialport.
         /// </summary>
         protected Thread writeThread;
+
+        /// <summary>
+        /// Bytes read from serialport.
+        /// </summary>
+        protected byte[] readBytes;
+
+        /// <summary>
+        /// Bytes write to serialport.
+        /// </summary>
+        protected byte[] writeBytes;
         #endregion
 
         #region Protected Method
@@ -84,11 +116,11 @@ namespace Developer.IO.Ports
         /// Initialize serialport.
         /// </summary>
         /// <param name="error">Error message.</param>
-        /// <returns>Initialize normal.</returns>
+        /// <returns>Initialize base on config file.</returns>
         protected virtual bool InitializeSerialPort(out string error)
         {
-            //Read comfig and initialize serialport.
-            var normal = SerialPortConfigurer.ReadConfig(out config, out error);
+            //Read config and initialize serialport.
+            var isRead = SerialPortConfigurer.ReadConfig(out config, out error);
             serialPort = new SerialPort(config.portName, config.baudRate, config.parity, config.dataBits, config.stopBits)
             {
                 ReadBufferSize = config.readBufferSize,
@@ -102,16 +134,16 @@ namespace Developer.IO.Ports
             writeThread = new Thread(WriteBytesToBuffer);
 
             //Initialize bytes array.
-            ReadBytes = new byte[config.readCount];
-            WriteBytes = new byte[config.writeCount];
+            readBytes = new byte[config.readCount];
+            writeBytes = new byte[config.writeCount];
 
-            if (normal)
-                Debug.Log("Initialize Succeed.");
+            if (isRead)
+                Debug.Log("Initialize succeed.");
             else
                 Debug.LogWarning("Initialize with default config. error : " + error);
 
             //Return state.
-            return normal;
+            return isRead;
         }
 
         /// <summary>
@@ -122,65 +154,71 @@ namespace Developer.IO.Ports
             //SerialPort.BytesToRead can not get in Unity.
             //Try to read all bytes of the SerialPort ReadBuffer to avoid delay.
             //So SerialPort.ReadBufferSize should be try to set small in the config file to reduce memory spending.
-            var buffer = new byte[serialPort.ReadBufferSize];
-            var count = 0;
+            var readBuffer = new byte[serialPort.ReadBufferSize];
+            var readCount = 0;
+            var index = 0;
 
             //Frame bytes length is config.readCount + 2(readHead + readTail).
-            var frame = config.readCount + 2;
-            var index = 0;
-            var readBuffer = new List<byte>();
+            var frameLength = config.readCount + 2;
+            var frameBuffer = new List<byte>();
 
             while (true)
             {
                 try
                 {
                     //Read bytes from serialport.
-                    count = serialPort.Read(buffer, 0, buffer.Length);
+                    readCount = serialPort.Read(readBuffer, 0, readBuffer.Length);
+                }
+                catch (TimeoutException te)
+                {
+                    Debug.Log(te.Message);
+                    ClearReadBytes();
+                    IsReadTimeout = true;
+                    Thread.Sleep(config.readCycle);
+                    continue;
                 }
                 catch (Exception e)
                 {
-                    if (e.GetType() == typeof(TimeoutException))
-                    {
-                        Debug.Log(e.Message);
-                        continue;
-                    }
-                    else
-                    {
-                        Debug.LogError(e.Message);
-                        readThread.Abort();
-                        break;
-                    }
+                    Debug.LogError(e.Message);
+                    readThread.Abort();
+                    ClearReadBytes();
+                    IsReadTimeout = false;
+                    break;
                 }
+
+                //Clear read timeout flag.
+                IsReadTimeout = false;
 
                 //Calculate the last index of double frame bytes to avoid delay.
                 //Under normal circumstances, bouble frame bytes affirm contain a intact frame bytes.
-                index = count - 2 * frame;
+                index = readCount - 2 * frameLength;
                 index = index > 0 ? index : 0;
 
-                //Add select bytes to readBuffer.
-                for (; index < count; index++)
+                //Add filter bytes to frameBuffer.
+                for (; index < readCount; index++)
                 {
-                    readBuffer.Add(buffer[index]);
+                    frameBuffer.Add(readBuffer[index]);
                 }
 
-                //Check readBuffer is enough for frame bytes.
-                while (readBuffer.Count >= frame)
+                //Check frameBuffer is enough for frame bytes.
+                while (frameBuffer.Count >= frameLength)
                 {
                     //Find readHead.
-                    if (readBuffer[0] == config.readHead)
+                    if (frameBuffer[0] == config.readHead)
                     {
                         //Find readTail, save the intact bytes to readBytes.
-                        if (readBuffer[frame - 1] == config.readTail)
-                            ReadBytes = readBuffer.GetRange(1, config.readCount).ToArray();
+                        if (frameBuffer[frameLength - 1] == config.readTail)
+                            readBytes = frameBuffer.GetRange(1, config.readCount).ToArray();
+                        else
+                            Debug.Log("Discard invalid frame bytes.");
 
                         //Remove the obsolete or invalid frame bytes.
-                        readBuffer.RemoveRange(0, frame);
+                        frameBuffer.RemoveRange(0, frameLength);
                     }
                     else
                         //Remove the invalid byte.
-                        readBuffer.RemoveAt(0);
+                        frameBuffer.RemoveAt(0);
                 }
-
                 Thread.Sleep(config.readCycle);
             }
         }
@@ -193,39 +231,46 @@ namespace Developer.IO.Ports
             //writeBuffer length is config.writeCount + 2(writeHead + writeTail).
             var writeBuffer = new byte[config.writeCount + 2];
 
+            //Add writeHead and writeTail to writeBuffer.
+            writeBuffer[0] = config.writeHead;
+            writeBuffer[config.writeCount + 1] = config.writeTail;
+
             while (true)
             {
-                //writeBytes length match config.
-                if (WriteBytes.Length == config.writeCount)
+                //Add writeBytes to writeBuffer.
+                writeBytes.CopyTo(writeBuffer, 1);
+                try
                 {
-                    //Add writeHead and writeTail to writeBuffer.
-                    writeBuffer[0] = config.writeHead;
-                    writeBuffer[config.writeCount + 1] = config.writeTail;
-
-                    //Add writeBytes to writeBuffer.
-                    WriteBytes.CopyTo(writeBuffer, 1);
-
-                    try
-                    {
-                        //Write writeBuffer to serialport
-                        serialPort.Write(writeBuffer, 0, writeBuffer.Length);
-                    }
-                    catch (Exception e)
-                    {
-                        if (e.GetType() == typeof(TimeoutException))
-                            Debug.Log(e.Message);
-                        else
-                        {
-                            Debug.LogError(e.Message);
-                            writeThread.Abort();
-                        }
-                    }
+                    //Write writeBuffer to serialport
+                    serialPort.Write(writeBuffer, 0, writeBuffer.Length);
                 }
-                else
-                    Debug.LogWarning("Length of writeBytes is not match config.");
+                catch (TimeoutException te)
+                {
+                    Debug.Log(te.Message);
+                    IsWriteTimeout = true;
+                    Thread.Sleep(config.writeCycle);
+                    continue;
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError(e.Message);
+                    writeThread.Abort();
+                    IsWriteTimeout = false;
+                    break;
+                }
 
+                //Clear write timeout flag.
+                IsWriteTimeout = false;
                 Thread.Sleep(config.writeCycle);
             }
+        }
+
+        /// <summary>
+        /// Clear the elements of ReadBytes to default value(zero).
+        /// </summary>
+        protected void ClearReadBytes()
+        {
+            Array.Clear(readBytes, 0, readBytes.Length);
         }
         #endregion
 
@@ -234,7 +279,7 @@ namespace Developer.IO.Ports
         /// ReInitialize serialport.
         /// </summary>
         /// <param name="error">Error message.</param>
-        /// <returns>ReInitialize succeeded.</returns>
+        /// <returns>ReInitialize succeed.</returns>
         public virtual bool ReInitializeSerialPort(out string error)
         {
             if (CloseSerialPort(out error))
@@ -250,7 +295,7 @@ namespace Developer.IO.Ports
         /// Open serialport.
         /// </summary>
         /// <param name="error">Error message.</param>
-        /// <returns>Open succeeded.</returns>
+        /// <returns>Open succeed.</returns>
         public virtual bool OpenSerialPort(out string error)
         {
             try
@@ -265,7 +310,7 @@ namespace Developer.IO.Ports
             }
 
             error = string.Empty;
-            Debug.Log("Open Succeed.");
+            Debug.Log("Open succeed.");
             return true;
         }
 
@@ -274,7 +319,7 @@ namespace Developer.IO.Ports
         /// This method will try abort thread if it is alive.
         /// </summary>
         /// <param name="error">Error message.</param>
-        /// <returns>Close succeeded.</returns>
+        /// <returns>Close succeed.</returns>
         public virtual bool CloseSerialPort(out string error)
         {
             if (IsReading)
@@ -299,16 +344,16 @@ namespace Developer.IO.Ports
             }
 
             error = string.Empty;
-            Debug.Log("Close Succeed.");
+            Debug.Log("Close succeed.");
             return true;
         }
 
         /// <summary>
         /// Start thread to read.
-        /// This method will try to open serialport if it is not opened.
+        /// This method will try to open serialport if it is not open.
         /// </summary>
         /// <param name="error">Error message.</param>
-        /// <returns>Start read thread succeeded.</returns>
+        /// <returns>Start read thread succeed.</returns>
         public virtual bool StartRead(out string error)
         {
             //SerialPort.ReceivedBytesThreshold is not implemented in Unity3D.
@@ -341,7 +386,7 @@ namespace Developer.IO.Ports
             }
 
             error = string.Empty;
-            Debug.Log("Start Read Succeed.");
+            Debug.Log("Start read succeed.");
             return true;
         }
 
@@ -349,7 +394,7 @@ namespace Developer.IO.Ports
         /// Stop thread of read.
         /// </summary>
         /// <param name="error">Error message.</param>
-        /// <returns>Stop read thread succeeded.</returns>
+        /// <returns>Stop read thread succeed.</returns>
         public virtual bool StopRead(out string error)
         {
             try
@@ -363,17 +408,19 @@ namespace Developer.IO.Ports
                 return false;
             }
 
+            ClearReadBytes();
+            IsReadTimeout = false;
             error = string.Empty;
-            Debug.Log("Stop Read Succeed.");
+            Debug.Log("Stop read succeed.");
             return true;
         }
 
         /// <summary>
         /// Start thread to write.
-        /// This method will try to open serialport if it is not opened.
+        /// This method will try to open serialport if it is not open.
         /// </summary>
         /// <param name="error">Error message.</param>
-        /// <returns>Start write thread succeeded.</returns>
+        /// <returns>Start write thread succeed.</returns>
         public virtual bool StartWrite(out string error)
         {
             if (!IsOpen)
@@ -402,7 +449,7 @@ namespace Developer.IO.Ports
             }
 
             error = string.Empty;
-            Debug.Log("Start Write Succeed.");
+            Debug.Log("Start write succeed.");
             return true;
         }
 
@@ -410,7 +457,7 @@ namespace Developer.IO.Ports
         /// Stop thread of write.
         /// </summary>
         /// <param name="error">Error message.</param>
-        /// <returns>Stop write thread succeeded.</returns>
+        /// <returns>Stop write thread succeed.</returns>
         public virtual bool StopWrite(out string error)
         {
             try
@@ -424,9 +471,18 @@ namespace Developer.IO.Ports
                 return false;
             }
 
+            IsWriteTimeout = false;
             error = string.Empty;
-            Debug.Log("Stop Write Succeed.");
+            Debug.Log("Stop write succeed.");
             return true;
+        }
+
+        /// <summary>
+        /// Clear the elements of WriteBytes to default value(zero).
+        /// </summary>
+        public void ClearWriteBytes()
+        {
+            Array.Clear(writeBytes, 0, writeBytes.Length);
         }
         #endregion
     }

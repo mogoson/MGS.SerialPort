@@ -20,9 +20,8 @@ using UnityEngine;
 using UnityEditor;
 #endif
 
-#if UNITY_5_3_OR_NEWER
-#else
-using Newtonsoft.Json;
+#if !UNITY_5_3_OR_NEWER
+using LitJson;
 #endif
 
 namespace Developer.IO.Ports
@@ -60,7 +59,7 @@ namespace Developer.IO.Ports
 #if UNITY_5_3_OR_NEWER
                 config = JsonUtility.FromJson<SerialPortConfig>(json);
 #else
-                config = JsonConvert.DeserializeObject<SerialPortConfig>(json);
+                config = JsonMapper.ToObject<SerialPortConfig>(json);
 #endif
             }
             catch (Exception e)
@@ -88,7 +87,7 @@ namespace Developer.IO.Ports
 #if UNITY_5_3_OR_NEWER
                 var configJson = JsonUtility.ToJson(config);
 #else
-                var configJson = JsonConvert.SerializeObject(config);
+                var configJson = JsonMapper.ToJson(config);
 #endif
                 File.WriteAllText(ConfigPath, configJson, ConfigEncoding);
             }
