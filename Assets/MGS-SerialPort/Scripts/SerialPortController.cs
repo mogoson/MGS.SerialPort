@@ -38,7 +38,7 @@ namespace Developer.IO.Ports
                 else if (value.Length != config.writeCount)
                     Debug.LogWarning("Value of WriteBytes is not match config length.");
                 else
-                    writeBytes = value.Clone() as byte[];
+                    value.CopyTo(writeBytes, 0);
             }
             get { return writeBytes; }
         }
