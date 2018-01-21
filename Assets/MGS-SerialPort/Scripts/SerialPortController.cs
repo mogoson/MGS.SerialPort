@@ -24,7 +24,7 @@ namespace Developer.IO.Ports
         /// <summary>
         /// Bytes read from serialport.
         /// </summary>
-        public byte[] ReadBytes { get { return readBytes.Clone() as byte[]; } }
+        public byte[] ReadBytes { get { return readBytes; } }
 
         /// <summary>
         /// Bytes write to serialport.
@@ -54,14 +54,14 @@ namespace Developer.IO.Ports
         public bool IsReading { get { return readThread.IsAlive; } }
 
         /// <summary>
-        /// Is Timeout reading from serialport.
-        /// </summary>
-        public bool IsReadTimeout { protected set; get; }
-
-        /// <summary>
         /// Is writing to serialport.
         /// </summary>
         public bool IsWriting { get { return writeThread.IsAlive; } }
+
+        /// <summary>
+        /// Is Timeout reading from serialport.
+        /// </summary>
+        public bool IsReadTimeout { protected set; get; }
 
         /// <summary>
         /// Is Timeout writing to serialport.
