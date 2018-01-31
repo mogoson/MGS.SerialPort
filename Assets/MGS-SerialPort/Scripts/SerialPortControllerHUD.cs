@@ -30,7 +30,7 @@ namespace Developer.IO.Ports
         private const string space = "\x0020";
         private readonly string[] separater = { space };
 
-        private SerialPortController Controller { get { return SerialPortManager.Instance; } }
+        private SerialPortController Controller { get { return SerialPortManager.GetController(); } }
         #endregion
 
         #region Private Method

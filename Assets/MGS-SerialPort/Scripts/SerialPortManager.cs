@@ -20,41 +20,38 @@ namespace Developer.IO.Ports
         /// <summary>
         /// Instance of SerialPortController.
         /// </summary>
-        public static SerialPortController Instance
-        {
-            get
-            {
-                if (instance == null)
-                {
-                    var controller = new GameObject(instanceName);
-                    instance = controller.AddComponent<SerialPortController>();
-                    Object.DontDestroyOnLoad(controller);
-                }
-                return instance;
-            }
-        }
+        private static SerialPortController controller;
 
         /// <summary>
-        /// Instance of SerialPortController.
+        /// Name of SerialPortController gameobject.
         /// </summary>
-        private static SerialPortController instance;
-
-        /// <summary>
-        /// Name of instance.
-        /// </summary>
-        private const string instanceName = "SerialPortController";
+        private const string controllerObjectName = "SerialPortController";
         #endregion
 
         #region Public Method
         /// <summary>
+        /// Get Instance of SerialPortController.
+        /// </summary>
+        public static SerialPortController GetController()
+        {
+            if (controller == null)
+            {
+                var controllerObject = new GameObject(controllerObjectName);
+                controller = controllerObject.AddComponent<SerialPortController>();
+                Object.DontDestroyOnLoad(controllerObject);
+            }
+            return controller;
+        }
+
+        /// <summary>
         /// Destroy instance of SerialPortController.
         /// </summary>
-        public static void DestroyInstance()
+        public static void DestroyController()
         {
-            if (instance)
+            if (controller)
             {
-                Object.Destroy(instance.gameObject);
-                instance = null;
+                Object.Destroy(controller.gameObject);
+                controller = null;
             }
         }
         #endregion
