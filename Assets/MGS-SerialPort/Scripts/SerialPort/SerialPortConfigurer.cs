@@ -1,5 +1,5 @@
-/*************************************************************************
- *  Copyright (C), 2017-2018, Mogoson Tech. Co., Ltd.
+﻿/*************************************************************************
+ *  Copyright © 2017-2018 Mogoson. All rights reserved.
  *------------------------------------------------------------------------
  *  File         :  SerialPortConfigurer.cs
  *  Description  :  Read config from local file and write config to
@@ -9,11 +9,15 @@
  *  Version      :  0.1.0
  *  Date         :  4/4/2017
  *  Description  :  Initial development version.
+ *  
+ *  Author       :  Mogoson
+ *  Version      :  0.1.1
+ *  Date         :  10/3/2017
+ *  Description  :  Use JsonUtility to serialize and deserialize config.
  *************************************************************************/
 
 using System;
 using System.IO;
-using System.Text;
 using UnityEngine;
 
 #if UNITY_EDITOR
@@ -36,11 +40,6 @@ namespace Developer.IO.Ports
         /// Full path of serialport config file.
         /// </summary>
         public static string ConfigPath { get { return Application.streamingAssetsPath + "/Config/SerialPortConfig.json"; } }
-
-        /// <summary>
-        /// Encoding of config file.
-        /// </summary>
-        public static Encoding ConfigEncoding { get { return Encoding.Default; } }
         #endregion
 
         #region Public Method
@@ -55,7 +54,7 @@ namespace Developer.IO.Ports
             config = new SerialPortConfig();
             try
             {
-                var json = File.ReadAllText(ConfigPath, ConfigEncoding);
+                var json = File.ReadAllText(ConfigPath);
 #if UNITY_5_3_OR_NEWER
                 config = JsonUtility.FromJson<SerialPortConfig>(json);
 #else
@@ -89,7 +88,7 @@ namespace Developer.IO.Ports
 #else
                 var configJson = JsonMapper.ToJson(config);
 #endif
-                File.WriteAllText(ConfigPath, configJson, ConfigEncoding);
+                File.WriteAllText(ConfigPath, configJson);
             }
             catch (Exception e)
             {

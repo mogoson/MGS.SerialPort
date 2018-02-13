@@ -1,5 +1,5 @@
-/*************************************************************************
- *  Copyright (C), 2017-2018, Mogoson Tech. Co., Ltd.
+﻿/*************************************************************************
+ *  Copyright © 2017-2018 Mogoson. All rights reserved.
  *------------------------------------------------------------------------
  *  File         :  SerialPortController.cs
  *  Description  :  Synchronous read and write serialport data.
@@ -8,17 +8,26 @@
  *  Version      :  0.1.0
  *  Date         :  4/5/2017
  *  Description  :  Initial development version.
+ *  
+ *  Author       :  Mogoson
+ *  Version      :  0.2.0
+ *  Date         :  2/13/2018
+ *  Description  :  Singleton pattern version.
  *************************************************************************/
 
 using System;
 using System.Collections.Generic;
 using System.IO.Ports;
 using System.Threading;
+using Developer.Singleton;
 using UnityEngine;
 
 namespace Developer.IO.Ports
 {
-    public class SerialPortController : MonoBehaviour
+    /// <summary>
+    /// Controller of serialport.
+    /// </summary>
+    public sealed class SerialPortController : Singleton<SerialPortController>
     {
         #region Property and Field
         /// <summary>
@@ -61,55 +70,52 @@ namespace Developer.IO.Ports
         /// <summary>
         /// Is Timeout reading from serialport.
         /// </summary>
-        public bool IsReadTimeout { protected set; get; }
+        public bool IsReadTimeout { private set; get; }
 
         /// <summary>
         /// Is Timeout writing to serialport.
         /// </summary>
-        public bool IsWriteTimeout { protected set; get; }
+        public bool IsWriteTimeout { private set; get; }
 
         /// <summary>
         /// Target serialport of controller.
         /// </summary>
-        protected SerialPort serialPort;
+        private SerialPort serialPort;
 
         /// <summary>
         /// Config of serialport.
         /// </summary>
-        protected SerialPortConfig config;
+        private SerialPortConfig config;
 
         /// <summary>
         /// Thread to read bytes from serialport.
         /// </summary>
-        protected Thread readThread;
+        private Thread readThread;
 
         /// <summary>
         /// Thread to write bytes to serialport.
         /// </summary>
-        protected Thread writeThread;
+        private Thread writeThread;
 
         /// <summary>
         /// Bytes read from serialport.
         /// </summary>
-        protected byte[] readBytes;
+        private byte[] readBytes;
 
         /// <summary>
         /// Bytes write to serialport.
         /// </summary>
-        protected byte[] writeBytes;
+        private byte[] writeBytes;
         #endregion
 
-        #region Protected Method
-        protected virtual void Awake()
+        #region Private Method
+        /// <summary>
+        /// Private constructor.
+        /// </summary>
+        private SerialPortController()
         {
             var error = string.Empty;
             InitializeSerialPort(out error);
-        }
-
-        protected virtual void OnDestroy()
-        {
-            var error = string.Empty;
-            CloseSerialPort(out error);
         }
 
         /// <summary>
@@ -117,7 +123,7 @@ namespace Developer.IO.Ports
         /// </summary>
         /// <param name="error">Error message.</param>
         /// <returns>Initialize base on config file.</returns>
-        protected virtual bool InitializeSerialPort(out string error)
+        private bool InitializeSerialPort(out string error)
         {
             //Read config and initialize serialport.
             var isRead = SerialPortConfigurer.ReadConfig(out config, out error);
@@ -129,9 +135,17 @@ namespace Developer.IO.Ports
                 WriteTimeout = config.writeTimeout
             };
 
-            //Initialize thread.
-            readThread = new Thread(ReadBytesFromBuffer);
-            writeThread = new Thread(WriteBytesToBuffer);
+            //Initialize read thread.
+            readThread = new Thread(ReadBytesFromBuffer)
+            {
+                IsBackground = true
+            };
+
+            //Initialize write thread.
+            writeThread = new Thread(WriteBytesToBuffer)
+            {
+                IsBackground = true
+            };
 
             //Initialize bytes array.
             readBytes = new byte[config.readCount];
@@ -149,7 +163,7 @@ namespace Developer.IO.Ports
         /// <summary>
         /// Read bytes from serialport buffer.
         /// </summary>
-        protected virtual void ReadBytesFromBuffer()
+        private void ReadBytesFromBuffer()
         {
             //SerialPort.BytesToRead can not get in Unity.
             //Try to read all bytes of the SerialPort ReadBuffer to avoid delay.
@@ -226,7 +240,7 @@ namespace Developer.IO.Ports
         /// <summary>
         /// Write bytes to serialport buffer.
         /// </summary>
-        protected virtual void WriteBytesToBuffer()
+        private void WriteBytesToBuffer()
         {
             //writeBuffer length is config.writeCount + 2(writeHead + writeTail).
             var writeBuffer = new byte[config.writeCount + 2];
@@ -268,7 +282,7 @@ namespace Developer.IO.Ports
         /// <summary>
         /// Clear the elements of ReadBytes to default value(zero).
         /// </summary>
-        protected void ClearReadBytes()
+        private void ClearReadBytes()
         {
             Array.Clear(readBytes, 0, readBytes.Length);
         }
@@ -280,7 +294,7 @@ namespace Developer.IO.Ports
         /// </summary>
         /// <param name="error">Error message.</param>
         /// <returns>ReInitialize succeed.</returns>
-        public virtual bool ReInitializeSerialPort(out string error)
+        public bool ReInitializeSerialPort(out string error)
         {
             if (CloseSerialPort(out error))
             {
@@ -296,7 +310,7 @@ namespace Developer.IO.Ports
         /// </summary>
         /// <param name="error">Error message.</param>
         /// <returns>Open succeed.</returns>
-        public virtual bool OpenSerialPort(out string error)
+        public bool OpenSerialPort(out string error)
         {
             try
             {
@@ -320,7 +334,7 @@ namespace Developer.IO.Ports
         /// </summary>
         /// <param name="error">Error message.</param>
         /// <returns>Close succeed.</returns>
-        public virtual bool CloseSerialPort(out string error)
+        public bool CloseSerialPort(out string error)
         {
             if (IsReading)
             {
@@ -354,10 +368,10 @@ namespace Developer.IO.Ports
         /// </summary>
         /// <param name="error">Error message.</param>
         /// <returns>Start read thread succeed.</returns>
-        public virtual bool StartRead(out string error)
+        public bool StartRead(out string error)
         {
-            //SerialPort.ReceivedBytesThreshold is not implemented in Unity3D.
-            //SerialPort.DataReceived event is can not work in Unity3D.
+            //SerialPort.ReceivedBytesThreshold is not implemented in Unity.
+            //SerialPort.DataReceived event is can not work in Unity.
             //So use thread to read bytes.
 
             if (!IsOpen)
@@ -369,7 +383,10 @@ namespace Developer.IO.Ports
             {
                 //readThread can not start after readThread.Abort().
                 //New readThread.
-                readThread = new Thread(ReadBytesFromBuffer);
+                readThread = new Thread(ReadBytesFromBuffer)
+                {
+                    IsBackground = true
+                };
             }
             try
             {
@@ -395,7 +412,7 @@ namespace Developer.IO.Ports
         /// </summary>
         /// <param name="error">Error message.</param>
         /// <returns>Stop read thread succeed.</returns>
-        public virtual bool StopRead(out string error)
+        public bool StopRead(out string error)
         {
             try
             {
@@ -421,7 +438,7 @@ namespace Developer.IO.Ports
         /// </summary>
         /// <param name="error">Error message.</param>
         /// <returns>Start write thread succeed.</returns>
-        public virtual bool StartWrite(out string error)
+        public bool StartWrite(out string error)
         {
             if (!IsOpen)
             {
@@ -432,7 +449,10 @@ namespace Developer.IO.Ports
             {
                 //writeThread can not start after writeThread.Abort().
                 //New writeThread.
-                writeThread = new Thread(WriteBytesToBuffer);
+                writeThread = new Thread(WriteBytesToBuffer)
+                {
+                    IsBackground = true
+                };
             }
             try
             {
@@ -458,7 +478,7 @@ namespace Developer.IO.Ports
         /// </summary>
         /// <param name="error">Error message.</param>
         /// <returns>Stop write thread succeed.</returns>
-        public virtual bool StopWrite(out string error)
+        public bool StopWrite(out string error)
         {
             try
             {

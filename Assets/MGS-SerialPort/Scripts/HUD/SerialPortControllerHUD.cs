@@ -1,5 +1,5 @@
-/*************************************************************************
- *  Copyright (C), 2017-2018, Mogoson Tech. Co., Ltd.
+﻿/*************************************************************************
+ *  Copyright © 2017-2018 Mogoson. All rights reserved.
  *------------------------------------------------------------------------
  *  File         :  SerialPortControllerHUD.cs
  *  Description  :  Draw UI in scene to control serialport.
@@ -30,7 +30,7 @@ namespace Developer.IO.Ports
         private const string space = "\x0020";
         private readonly string[] separater = { space };
 
-        private SerialPortController Controller { get { return SerialPortManager.GetController(); } }
+        private SerialPortController Controller { get { return SerialPortController.Instance; } }
         #endregion
 
         #region Private Method
@@ -146,6 +146,15 @@ namespace Developer.IO.Ports
 
             GUILayout.TextArea(readText, GUILayout.ExpandHeight(true));
             GUILayout.EndArea();
+        }
+
+        private void OnApplicationQuit()
+        {
+            if (Controller.IsOpen)
+            {
+                var error = string.Empty;
+                Controller.CloseSerialPort(out error);
+            }
         }
         #endregion
     }

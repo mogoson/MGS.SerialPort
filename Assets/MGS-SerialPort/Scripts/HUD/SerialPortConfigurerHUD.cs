@@ -1,12 +1,12 @@
-/*************************************************************************
- *  Copyright (C), 2017-2018, Mogoson Tech. Co., Ltd.
+﻿/*************************************************************************
+ *  Copyright © 2017-2018 Mogoson. All rights reserved.
  *------------------------------------------------------------------------
  *  File         :  SerialPortConfigurerHUD.cs
  *  Description  :  Draw UI in scene to config serialport parameters.
  *------------------------------------------------------------------------
  *  Author       :  Mogoson
  *  Version      :  0.1.0
- *  Date         :  4/4/2017
+ *  Date         :  4/5/2017
  *  Description  :  Initial development version.
  *************************************************************************/
 
