@@ -1,7 +1,7 @@
 ==========================================================================
-  Copyright (C), 2017-2018, Mogoson Tech. Co., Ltd.
+  Copyright © 2017-2018 Mogoson. All rights reserved.
   Name: MGS-SerialPort
-  Author: Mogoson   Version: 0.2.0   Date: 1/13/2018
+  Author: Mogoson   Version: 0.2.0   Date: 2/14/2018
 ==========================================================================
   [Summary]
     Unity communicate with serialport.
@@ -15,7 +15,7 @@
     .Net Framework 2.0.
 
     If Unity 5.3 or higher version, the Json plugin(LitJson.dll) can be
-	delete.
+	  delete.
 
     If namespace error, set the "Api Compatibility Level" as ".NET 2.0".
     Find in the path "Build Settings -> Player Settings -> Other Settings".
@@ -27,8 +27,6 @@
     to local file.
 
     SerialPortController : Synchronous read and write serialport data.
-
-    SerialPortManager : Manage SerialPortController instance.
 --------------------------------------------------------------------------
   [Usage]
     Find the prefab "SerialPortHUD" in the path "MGS-SerialPort\Prefabs"
@@ -36,8 +34,9 @@
 
     Play your scene, config the parameters of serialport in the HUD.
 
-    Use the SerialPortManager.Instance to get the SerialPortController
-    in your script to control SerialPort and read, write byte data.
+    Use the SerialPortController.Instance to get the instance of
+    SerialPortController in your script to control SerialPort and read,
+    write byte data.
 --------------------------------------------------------------------------
   [Config]
     The config file in the path "StreamingAssets\Config\SerialPortConfig.json".

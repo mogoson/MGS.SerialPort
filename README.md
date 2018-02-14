@@ -25,7 +25,6 @@
 - SerialPortConfig : Config of serialport parameters.
 - SerialPortConfigurer : Read config from local file and write config to file.
 - SerialPortController : Synchronous read and write serialport data.
-- SerialPortManager : Manage SerialPortController instance.
 
 ## Demo
 - Demos in the path "MGS-SerialPort\Scenes" provide reference to you.

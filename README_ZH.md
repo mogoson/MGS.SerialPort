@@ -8,7 +8,7 @@
 - 串口数据同步读取，持续写入；串口参数通过本地文件配置（便于安装调试和后续维护）。
 
 ## 环境
-- Unity 5.0 或更高版本（如果是Unity5.3或者更高版本，Json插件LitJson.dll可以删除）。
+- Unity 5.0 或更高版本（如果是Unity 5.3 或者更高版本，Json插件LitJson.dll可以删除）。
 - .Net Framework 2.0（项目打包设置“Build Settings -> Player Settings -> Other Settings”
   ->“Api Compatibility Level” 项设置为 ".NET 2.0"）。
 
@@ -66,7 +66,6 @@
 - SerialPortConfig：结构化存储串口参数配置。
 - SerialPortConfigurer：串口参数配置写入本地文件，从文件读取配置。
 - SerialPortController：串口同步读取，持续写入。
-- SerialPortManager : 统一管理串口控制器。
 
 ## 案例
 - “MGS-SerialPort\Scenes”目录下存有上述功能的演示案例，供读者参考。
