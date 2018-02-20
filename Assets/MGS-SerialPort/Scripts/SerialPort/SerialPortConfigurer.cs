@@ -39,7 +39,7 @@ namespace Developer.IO.Ports
         /// <summary>
         /// Full path of serialport config file.
         /// </summary>
-        public static string ConfigPath { get { return Application.streamingAssetsPath + "/Config/SerialPortConfig.json"; } }
+        public static readonly string configPath = Application.streamingAssetsPath + "/Config/SerialPortConfig.json";
         #endregion
 
         #region Public Method
@@ -54,7 +54,7 @@ namespace Developer.IO.Ports
             config = new SerialPortConfig();
             try
             {
-                var json = File.ReadAllText(ConfigPath);
+                var json = File.ReadAllText(configPath);
 #if UNITY_5_3_OR_NEWER
                 config = JsonUtility.FromJson<SerialPortConfig>(json);
 #else
@@ -88,7 +88,7 @@ namespace Developer.IO.Ports
 #else
                 var configJson = JsonMapper.ToJson(config);
 #endif
-                File.WriteAllText(ConfigPath, configJson);
+                File.WriteAllText(configPath, configJson);
             }
             catch (Exception e)
             {
