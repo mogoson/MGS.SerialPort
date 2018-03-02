@@ -8,6 +8,11 @@
  *  Version      :  0.1.0
  *  Date         :  4/5/2017
  *  Description  :  Initial development version.
+ *  
+ *  Author       :  Mogoson
+ *  Version      :  0.1.1
+ *  Date         :  3/2/2018
+ *  Description  :  Optimize.
  *************************************************************************/
 
 using System.IO.Ports;
@@ -18,7 +23,7 @@ namespace Developer.IO.Ports
     [AddComponentMenu("Developer/IO/Ports/SerialPortConfigurerHUD")]
     public class SerialPortConfigurerHUD : MonoBehaviour
     {
-        #region Property and Field
+        #region Field and Property
         public float xOffset = 10;
         public float yOffset = 10;
 

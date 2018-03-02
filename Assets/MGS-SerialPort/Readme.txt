@@ -15,7 +15,7 @@
     .Net Framework 2.0.
 
     If Unity 5.3 or higher version, the Json plugin(LitJson.dll) can be
-	  delete.
+	delete.
 
     If namespace error, set the "Api Compatibility Level" as ".NET 2.0".
     Find in the path "Build Settings -> Player Settings -> Other Settings".
@@ -32,7 +32,10 @@
     Find the prefab "SerialPortHUD" in the path "MGS-SerialPort\Prefabs"
     and add it to your scene.
 
-    Play your scene, config the parameters of serialport in the HUD.
+    Play your scene, config the parameters of serialport in the HUD and
+    test communicate with serialport.
+
+    Delete the SerialPortHUD from your scene if you do not need it.
 
     Use the SerialPortController.Instance to get the instance of
     SerialPortController in your script to control SerialPort and read,

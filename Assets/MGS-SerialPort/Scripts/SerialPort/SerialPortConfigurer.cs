@@ -14,6 +14,11 @@
  *  Version      :  0.1.1
  *  Date         :  10/3/2017
  *  Description  :  Use JsonUtility to serialize and deserialize config.
+ *  
+ *  Author       :  Mogoson
+ *  Version      :  0.1.2
+ *  Date         :  3/2/2018
+ *  Description  :  Optimize.
  *************************************************************************/
 
 using System;
@@ -35,11 +40,11 @@ namespace Developer.IO.Ports
     /// </summary>
     public static class SerialPortConfigurer
     {
-        #region Property and Field
+        #region Field and Property
         /// <summary>
         /// Full path of serialport config file.
         /// </summary>
-        public static readonly string configPath = Application.streamingAssetsPath + "/Config/SerialPortConfig.json";
+        public static readonly string ConfigPath = Application.streamingAssetsPath + "/Config/SerialPortConfig.json";
         #endregion
 
         #region Public Method
@@ -54,7 +59,7 @@ namespace Developer.IO.Ports
             config = new SerialPortConfig();
             try
             {
-                var json = File.ReadAllText(configPath);
+                var json = File.ReadAllText(ConfigPath);
 #if UNITY_5_3_OR_NEWER
                 config = JsonUtility.FromJson<SerialPortConfig>(json);
 #else
@@ -88,7 +93,7 @@ namespace Developer.IO.Ports
 #else
                 var configJson = JsonMapper.ToJson(config);
 #endif
-                File.WriteAllText(configPath, configJson);
+                File.WriteAllText(ConfigPath, configJson);
             }
             catch (Exception e)
             {

@@ -8,6 +8,11 @@
  *  Version      :  0.1.0
  *  Date         :  4/5/2017
  *  Description  :  Initial development version.
+ *  
+ *  Author       :  Mogoson
+ *  Version      :  0.1.1
+ *  Date         :  3/2/2018
+ *  Description  :  Optimize.
  *************************************************************************/
 
 using System;
@@ -20,15 +25,15 @@ namespace Developer.IO.Ports
     [AddComponentMenu("Developer/IO/Ports/SerialPortControllerHUD")]
     public class SerialPortControllerHUD : MonoBehaviour
     {
-        #region Property and Field
+        #region Field and Property
         public float xOffset = 10;
         public float yOffset = 10;
 
         private string readText = string.Empty;
         private string writeText = string.Empty;
 
-        private const string space = "\x0020";
-        private readonly string[] separater = { space };
+        private const string Space = "\x0020";
+        private readonly string[] separater = { Space };
 
         private SerialPortController Controller { get { return SerialPortController.Instance; } }
         #endregion
@@ -47,7 +52,7 @@ namespace Developer.IO.Ports
                     var readString = string.Empty;
                     foreach (var @byte in Controller.ReadBytes)
                     {
-                        readString += @byte.ToString("X2") + space;
+                        readString += @byte.ToString("X2") + Space;
                     }
                     readText = readString;
                 }

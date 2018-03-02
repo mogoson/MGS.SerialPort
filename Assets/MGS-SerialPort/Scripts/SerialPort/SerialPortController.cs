@@ -29,7 +29,7 @@ namespace Developer.IO.Ports
     /// </summary>
     public sealed class SerialPortController : Singleton<SerialPortController>
     {
-        #region Property and Field
+        #region Field and Property
         /// <summary>
         /// Bytes read from serialport.
         /// </summary>
