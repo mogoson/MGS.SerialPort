@@ -40,15 +40,7 @@ namespace Developer.IO.Ports
         /// </summary>
         public byte[] WriteBytes
         {
-            set
-            {
-                if (value == null)
-                    Debug.LogWarning("Value of WriteBytes is null.");
-                else if (value.Length != config.writeCount)
-                    Debug.LogWarning("Value of WriteBytes is not match config length.");
-                else
-                    value.CopyTo(writeBytes, 0);
-            }
+            set { value.CopyTo(writeBytes, 0); }
             get { return writeBytes; }
         }
 

@@ -30,7 +30,7 @@ namespace Developer.Singleton
             /// <summary>
             /// Single instance of the specified type T created by that type's default constructor.
             /// </summary>
-            internal static readonly T instance = Activator.CreateInstance(typeof(T), true) as T;
+            internal static readonly T Instance = Activator.CreateInstance(typeof(T), true) as T;
             #endregion
 
             #region Static Method
@@ -46,7 +46,7 @@ namespace Developer.Singleton
         /// <summary>
         /// Single instance of the specified type T.
         /// </summary>
-        public static T Instance { get { return InnerSingleton.instance; } }
+        public static T Instance { get { return InnerSingleton.Instance; } }
         #endregion
     }
 }
