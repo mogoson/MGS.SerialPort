@@ -127,17 +127,9 @@ namespace Developer.IO.Ports
                 WriteTimeout = config.writeTimeout
             };
 
-            //Initialize read thread.
-            readThread = new Thread(ReadBytesFromBuffer)
-            {
-                IsBackground = true
-            };
-
-            //Initialize write thread.
-            writeThread = new Thread(WriteBytesToBuffer)
-            {
-                IsBackground = true
-            };
+            //Initialize read and write thread.
+            readThread = new Thread(ReadBytesFromBuffer) { IsBackground = true };
+            writeThread = new Thread(WriteBytesToBuffer) { IsBackground = true };
 
             //Initialize bytes array.
             readBytes = new byte[config.readCount];
@@ -374,11 +366,8 @@ namespace Developer.IO.Ports
             if (!IsReading)
             {
                 //readThread can not start after readThread.Abort().
-                //New readThread.
-                readThread = new Thread(ReadBytesFromBuffer)
-                {
-                    IsBackground = true
-                };
+                //New read thread.
+                readThread = new Thread(ReadBytesFromBuffer) { IsBackground = true };
             }
             try
             {
@@ -440,11 +429,8 @@ namespace Developer.IO.Ports
             if (!IsWriting)
             {
                 //writeThread can not start after writeThread.Abort().
-                //New writeThread.
-                writeThread = new Thread(WriteBytesToBuffer)
-                {
-                    IsBackground = true
-                };
+                //New write thread.
+                writeThread = new Thread(WriteBytesToBuffer) { IsBackground = true };
             }
             try
             {
