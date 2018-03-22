@@ -33,7 +33,7 @@ using UnityEditor;
 using LitJson;
 #endif
 
-namespace Developer.IO.Ports
+namespace Mogoson.IO.Ports
 {
     /// <summary>
     /// Configurer of SerialPort.
@@ -65,6 +65,9 @@ namespace Developer.IO.Ports
 #else
                 config = JsonMapper.ToObject<SerialPortConfig>(json);
 #endif
+                error = string.Empty;
+                Debug.Log("Read config succeed.");
+                return true;
             }
             catch (Exception e)
             {
@@ -72,10 +75,6 @@ namespace Developer.IO.Ports
                 Debug.LogError(error);
                 return false;
             }
-
-            error = string.Empty;
-            Debug.Log("Read config succeed.");
-            return true;
         }
 
         /// <summary>
@@ -94,6 +93,12 @@ namespace Developer.IO.Ports
                 var configJson = JsonMapper.ToJson(config);
 #endif
                 File.WriteAllText(ConfigPath, configJson);
+#if UNITY_EDITOR
+                AssetDatabase.Refresh();
+#endif
+                error = string.Empty;
+                Debug.Log("Write config succeed.");
+                return true;
             }
             catch (Exception e)
             {
@@ -101,13 +106,6 @@ namespace Developer.IO.Ports
                 Debug.LogError(error);
                 return false;
             }
-
-#if UNITY_EDITOR
-            AssetDatabase.Refresh();
-#endif
-            error = string.Empty;
-            Debug.Log("Write config succeed.");
-            return true;
         }
         #endregion
     }

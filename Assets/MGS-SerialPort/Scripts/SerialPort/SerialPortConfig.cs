@@ -18,7 +18,7 @@
 using System;
 using System.IO.Ports;
 
-namespace Developer.IO.Ports
+namespace Mogoson.IO.Ports
 {
     /// <summary>
     /// Config of SerialPort.

@@ -18,9 +18,8 @@
 using System.IO.Ports;
 using UnityEngine;
 
-namespace Developer.IO.Ports
+namespace Mogoson.IO.Ports
 {
-    [AddComponentMenu("Developer/IO/Ports/SerialPortConfigurerHUD")]
     public class SerialPortConfigurerHUD : MonoBehaviour
     {
         #region Field and Property

@@ -19,10 +19,10 @@ using System;
 using System.Collections.Generic;
 using System.IO.Ports;
 using System.Threading;
-using Developer.Singleton;
+using Mogoson.Singleton;
 using UnityEngine;
 
-namespace Developer.IO.Ports
+namespace Mogoson.IO.Ports
 {
     /// <summary>
     /// Controller of serialport.
@@ -166,6 +166,41 @@ namespace Developer.IO.Ports
                 {
                     //Read bytes from serialport.
                     readCount = serialPort.Read(readBuffer, 0, readBuffer.Length);
+
+                    //Calculate the last index of double frame bytes to avoid delay.
+                    //Under normal circumstances, bouble frame bytes affirm contain a intact frame bytes.
+                    index = readCount - 2 * frameLength;
+                    index = index > 0 ? index : 0;
+
+                    //Add filter bytes to frameBuffer.
+                    for (; index < readCount; index++)
+                    {
+                        frameBuffer.Add(readBuffer[index]);
+                    }
+
+                    //Check frameBuffer is enough for frame bytes.
+                    while (frameBuffer.Count >= frameLength)
+                    {
+                        //Find readHead.
+                        if (frameBuffer[0] == config.readHead)
+                        {
+                            //Find readTail, save the intact bytes to readBytes.
+                            if (frameBuffer[frameLength - 1] == config.readTail)
+                                readBytes = frameBuffer.GetRange(1, config.readCount).ToArray();
+                            else
+                                Debug.Log("Discard invalid frame bytes.");
+
+                            //Remove the obsolete or invalid frame bytes.
+                            frameBuffer.RemoveRange(0, frameLength);
+                        }
+                        else
+                            //Remove the invalid byte.
+                            frameBuffer.RemoveAt(0);
+                    }
+
+                    //Clear read timeout flag.
+                    IsReadTimeout = false;
+                    Thread.Sleep(config.readCycle);
                 }
                 catch (TimeoutException te)
                 {
@@ -183,41 +218,6 @@ namespace Developer.IO.Ports
                     IsReadTimeout = false;
                     break;
                 }
-
-                //Clear read timeout flag.
-                IsReadTimeout = false;
-
-                //Calculate the last index of double frame bytes to avoid delay.
-                //Under normal circumstances, bouble frame bytes affirm contain a intact frame bytes.
-                index = readCount - 2 * frameLength;
-                index = index > 0 ? index : 0;
-
-                //Add filter bytes to frameBuffer.
-                for (; index < readCount; index++)
-                {
-                    frameBuffer.Add(readBuffer[index]);
-                }
-
-                //Check frameBuffer is enough for frame bytes.
-                while (frameBuffer.Count >= frameLength)
-                {
-                    //Find readHead.
-                    if (frameBuffer[0] == config.readHead)
-                    {
-                        //Find readTail, save the intact bytes to readBytes.
-                        if (frameBuffer[frameLength - 1] == config.readTail)
-                            readBytes = frameBuffer.GetRange(1, config.readCount).ToArray();
-                        else
-                            Debug.Log("Discard invalid frame bytes.");
-
-                        //Remove the obsolete or invalid frame bytes.
-                        frameBuffer.RemoveRange(0, frameLength);
-                    }
-                    else
-                        //Remove the invalid byte.
-                        frameBuffer.RemoveAt(0);
-                }
-                Thread.Sleep(config.readCycle);
             }
         }
 
@@ -241,6 +241,8 @@ namespace Developer.IO.Ports
                 {
                     //Write writeBuffer to serialport
                     serialPort.Write(writeBuffer, 0, writeBuffer.Length);
+                    IsWriteTimeout = false;
+                    Thread.Sleep(config.writeCycle);
                 }
                 catch (TimeoutException te)
                 {
@@ -256,10 +258,6 @@ namespace Developer.IO.Ports
                     IsWriteTimeout = false;
                     break;
                 }
-
-                //Clear write timeout flag.
-                IsWriteTimeout = false;
-                Thread.Sleep(config.writeCycle);
             }
         }
 
@@ -299,6 +297,10 @@ namespace Developer.IO.Ports
             try
             {
                 serialPort.Open();
+                error = string.Empty;
+
+                Debug.Log("Open succeed.");
+                return true;
             }
             catch (Exception e)
             {
@@ -306,10 +308,6 @@ namespace Developer.IO.Ports
                 Debug.LogError(error);
                 return false;
             }
-
-            error = string.Empty;
-            Debug.Log("Open succeed.");
-            return true;
         }
 
         /// <summary>
@@ -333,6 +331,10 @@ namespace Developer.IO.Ports
             try
             {
                 serialPort.Close();
+                error = string.Empty;
+
+                Debug.Log("Close succeed.");
+                return true;
             }
             catch (Exception e)
             {
@@ -340,10 +342,6 @@ namespace Developer.IO.Ports
                 Debug.LogError(error);
                 return false;
             }
-
-            error = string.Empty;
-            Debug.Log("Close succeed.");
-            return true;
         }
 
         /// <summary>
@@ -375,6 +373,10 @@ namespace Developer.IO.Ports
                 //Do not do it is ok.
                 serialPort.DiscardInBuffer();
                 readThread.Start();
+                error = string.Empty;
+
+                Debug.Log("Start read succeed.");
+                return true;
             }
             catch (Exception e)
             {
@@ -382,10 +384,6 @@ namespace Developer.IO.Ports
                 Debug.LogError(error);
                 return false;
             }
-
-            error = string.Empty;
-            Debug.Log("Start read succeed.");
-            return true;
         }
 
         /// <summary>
@@ -398,6 +396,12 @@ namespace Developer.IO.Ports
             try
             {
                 readThread.Abort();
+                ClearReadBytes();
+                IsReadTimeout = false;
+                error = string.Empty;
+
+                Debug.Log("Stop read succeed.");
+                return true;
             }
             catch (Exception e)
             {
@@ -405,12 +409,6 @@ namespace Developer.IO.Ports
                 Debug.LogError(error);
                 return false;
             }
-
-            ClearReadBytes();
-            IsReadTimeout = false;
-            error = string.Empty;
-            Debug.Log("Stop read succeed.");
-            return true;
         }
 
         /// <summary>
@@ -438,6 +436,10 @@ namespace Developer.IO.Ports
                 //Do not do it is ok.
                 serialPort.DiscardOutBuffer();
                 writeThread.Start();
+                error = string.Empty;
+
+                Debug.Log("Start write succeed.");
+                return true;
             }
             catch (Exception e)
             {
@@ -445,10 +447,6 @@ namespace Developer.IO.Ports
                 Debug.LogError(error);
                 return false;
             }
-
-            error = string.Empty;
-            Debug.Log("Start write succeed.");
-            return true;
         }
 
         /// <summary>
@@ -461,6 +459,11 @@ namespace Developer.IO.Ports
             try
             {
                 writeThread.Abort();
+                IsWriteTimeout = false;
+                error = string.Empty;
+
+                Debug.Log("Stop write succeed.");
+                return true;
             }
             catch (Exception e)
             {
@@ -468,11 +471,6 @@ namespace Developer.IO.Ports
                 Debug.LogError(error);
                 return false;
             }
-
-            IsWriteTimeout = false;
-            error = string.Empty;
-            Debug.Log("Stop write succeed.");
-            return true;
         }
 
         /// <summary>

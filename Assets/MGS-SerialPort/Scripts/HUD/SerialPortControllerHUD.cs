@@ -20,9 +20,8 @@ using System.Collections.Generic;
 using System.Globalization;
 using UnityEngine;
 
-namespace Developer.IO.Ports
+namespace Mogoson.IO.Ports
 {
-    [AddComponentMenu("Developer/IO/Ports/SerialPortControllerHUD")]
     public class SerialPortControllerHUD : MonoBehaviour
     {
         #region Field and Property
