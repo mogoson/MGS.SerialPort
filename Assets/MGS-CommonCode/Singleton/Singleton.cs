@@ -12,7 +12,7 @@
 
 using System;
 
-namespace Mogoson.Singleton
+namespace Mogoson.DesignPattern
 {
     /// <summary>
     /// Provide a single instance of the specified type T.

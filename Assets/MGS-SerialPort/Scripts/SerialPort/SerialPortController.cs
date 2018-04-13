@@ -15,11 +15,11 @@
  *  Description  :  Singleton pattern version.
  *************************************************************************/
 
+using Mogoson.DesignPattern;
 using System;
 using System.Collections.Generic;
 using System.IO.Ports;
 using System.Threading;
-using Mogoson.Singleton;
 using UnityEngine;
 
 namespace Mogoson.IO.Ports
