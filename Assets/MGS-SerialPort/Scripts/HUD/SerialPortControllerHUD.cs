@@ -22,6 +22,7 @@ using UnityEngine;
 
 namespace Mogoson.IO.Ports
 {
+    [AddComponentMenu("Mogoson/IO/Ports/SerialPortControllerHUD")]
     public class SerialPortControllerHUD : MonoBehaviour
     {
         #region Field and Property
