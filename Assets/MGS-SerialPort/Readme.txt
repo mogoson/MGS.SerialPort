@@ -1,4 +1,4 @@
-==========================================================================
+﻿==========================================================================
   Copyright © 2017-2018 Mogoson. All rights reserved.
   Name: MGS-SerialPort
   Author: Mogoson   Version: 0.2.0   Date: 2/14/2018
@@ -66,5 +66,5 @@
     https://github.com/mogoson/MGS-SerialPort.
 --------------------------------------------------------------------------
   [Contact]
-    If you have any questions, feel free to contact me at mogoson@qq.com.
+    If you have any questions, feel free to contact me at mogoson@outlook.com.
 --------------------------------------------------------------------------
