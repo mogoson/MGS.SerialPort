@@ -20,7 +20,6 @@ using System;
 using System.Collections.Generic;
 using System.IO.Ports;
 using System.Threading;
-using UnityEngine;
 
 namespace Mogoson.IO.Ports
 {
@@ -106,42 +105,7 @@ namespace Mogoson.IO.Ports
         /// </summary>
         private SerialPortController()
         {
-            var error = string.Empty;
-            InitializeSerialPort(out error);
-        }
-
-        /// <summary>
-        /// Initialize serialport.
-        /// </summary>
-        /// <param name="error">Error message.</param>
-        /// <returns>Initialize base on config file.</returns>
-        private bool InitializeSerialPort(out string error)
-        {
-            //Read config and initialize serialport.
-            var isRead = SerialPortConfigurer.ReadConfig(out config, out error);
-            serialPort = new SerialPort(config.portName, config.baudRate, config.parity, config.dataBits, config.stopBits)
-            {
-                ReadBufferSize = config.readBufferSize,
-                ReadTimeout = config.readTimeout,
-                WriteBufferSize = config.writeBufferSize,
-                WriteTimeout = config.writeTimeout
-            };
-
-            //Initialize read and write thread.
-            readThread = new Thread(ReadBytesFromBuffer) { IsBackground = true };
-            writeThread = new Thread(WriteBytesToBuffer) { IsBackground = true };
-
-            //Initialize bytes array.
-            readBytes = new byte[config.readCount];
-            writeBytes = new byte[config.writeCount];
-
-            if (isRead)
-                Debug.Log("Initialize succeed.");
-            else
-                Debug.LogWarning("Initialize with default config. error : " + error);
-
-            //Return state.
-            return isRead;
+            InitializeSerialPort();
         }
 
         /// <summary>
@@ -187,8 +151,6 @@ namespace Mogoson.IO.Ports
                             //Find readTail, save the intact bytes to readBytes.
                             if (frameBuffer[frameLength - 1] == config.readTail)
                                 readBytes = frameBuffer.GetRange(1, config.readCount).ToArray();
-                            else
-                                Debug.Log("Discard invalid frame bytes.");
 
                             //Remove the obsolete or invalid frame bytes.
                             frameBuffer.RemoveRange(0, frameLength);
@@ -204,7 +166,7 @@ namespace Mogoson.IO.Ports
                 }
                 catch (TimeoutException te)
                 {
-                    Debug.Log(te.Message);
+                    Logger.Log(te.Message);
                     ClearReadBytes();
                     IsReadTimeout = true;
                     Thread.Sleep(config.readCycle);
@@ -212,7 +174,7 @@ namespace Mogoson.IO.Ports
                 }
                 catch (Exception e)
                 {
-                    Debug.LogError(e.Message);
+                    Logger.LogError(e.Message);
                     readThread.Abort();
                     ClearReadBytes();
                     IsReadTimeout = false;
@@ -246,14 +208,14 @@ namespace Mogoson.IO.Ports
                 }
                 catch (TimeoutException te)
                 {
-                    Debug.Log(te.Message);
+                    Logger.Log(te.Message);
                     IsWriteTimeout = true;
                     Thread.Sleep(config.writeCycle);
                     continue;
                 }
                 catch (Exception e)
                 {
-                    Debug.LogError(e.Message);
+                    Logger.LogError(e.Message);
                     writeThread.Abort();
                     IsWriteTimeout = false;
                     break;
@@ -272,40 +234,43 @@ namespace Mogoson.IO.Ports
 
         #region Public Method
         /// <summary>
-        /// ReInitialize serialport.
+        /// Initialize serialport.
         /// </summary>
-        /// <param name="error">Error message.</param>
-        /// <returns>ReInitialize succeed.</returns>
-        public bool ReInitializeSerialPort(out string error)
+        public void InitializeSerialPort()
         {
-            if (CloseSerialPort(out error))
+            //Read config and initialize serialport.
+            config = SerialPortConfigurer.ReadConfig();
+            serialPort = new SerialPort(config.portName, config.baudRate, config.parity, config.dataBits, config.stopBits)
             {
-                InitializeSerialPort(out error);
-                return true;
-            }
-            else
-                return false;
+                ReadBufferSize = config.readBufferSize,
+                ReadTimeout = config.readTimeout,
+                WriteBufferSize = config.writeBufferSize,
+                WriteTimeout = config.writeTimeout
+            };
+
+            //Initialize read and write thread.
+            readThread = new Thread(ReadBytesFromBuffer) { IsBackground = true };
+            writeThread = new Thread(WriteBytesToBuffer) { IsBackground = true };
+
+            //Initialize bytes array.
+            readBytes = new byte[config.readCount];
+            writeBytes = new byte[config.writeCount];
         }
 
         /// <summary>
         /// Open serialport.
         /// </summary>
-        /// <param name="error">Error message.</param>
-        /// <returns>Open succeed.</returns>
-        public bool OpenSerialPort(out string error)
+        /// <returns>Is succeed to open serialport?</returns>
+        public bool OpenSerialPort()
         {
             try
             {
                 serialPort.Open();
-                error = string.Empty;
-
-                Debug.Log("Open succeed.");
                 return true;
             }
             catch (Exception e)
             {
-                error = e.Message;
-                Debug.LogError(error);
+                Logger.LogError(e.Message);
                 return false;
             }
         }
@@ -314,32 +279,27 @@ namespace Mogoson.IO.Ports
         /// Close serialport.
         /// This method will try abort thread if it is alive.
         /// </summary>
-        /// <param name="error">Error message.</param>
-        /// <returns>Close succeed.</returns>
-        public bool CloseSerialPort(out string error)
+        /// <returns>Is succeed to close serialport?</returns>
+        public bool CloseSerialPort()
         {
             if (IsReading)
             {
-                if (!StopRead(out error))
+                if (!StopRead())
                     return false;
             }
             if (IsWriting)
             {
-                if (!StopWrite(out error))
+                if (!StopWrite())
                     return false;
             }
             try
             {
                 serialPort.Close();
-                error = string.Empty;
-
-                Debug.Log("Close succeed.");
                 return true;
             }
             catch (Exception e)
             {
-                error = e.Message;
-                Debug.LogError(error);
+                Logger.LogError(e.Message);
                 return false;
             }
         }
@@ -348,9 +308,8 @@ namespace Mogoson.IO.Ports
         /// Start thread to read.
         /// This method will try to open serialport if it is not open.
         /// </summary>
-        /// <param name="error">Error message.</param>
-        /// <returns>Start read thread succeed.</returns>
-        public bool StartRead(out string error)
+        /// <returns>Is succeed to start read thread?</returns>
+        public bool StartRead()
         {
             //SerialPort.ReceivedBytesThreshold is not implemented in Unity.
             //SerialPort.DataReceived event is can not work in Unity.
@@ -358,7 +317,7 @@ namespace Mogoson.IO.Ports
 
             if (!IsOpen)
             {
-                if (!OpenSerialPort(out error))
+                if (!OpenSerialPort())
                     return false;
             }
             if (!IsReading)
@@ -373,15 +332,11 @@ namespace Mogoson.IO.Ports
                 //Do not do it is ok.
                 serialPort.DiscardInBuffer();
                 readThread.Start();
-                error = string.Empty;
-
-                Debug.Log("Start read succeed.");
                 return true;
             }
             catch (Exception e)
             {
-                error = e.Message;
-                Debug.LogError(error);
+                Logger.LogError(e.Message);
                 return false;
             }
         }
@@ -389,24 +344,19 @@ namespace Mogoson.IO.Ports
         /// <summary>
         /// Stop thread of read.
         /// </summary>
-        /// <param name="error">Error message.</param>
-        /// <returns>Stop read thread succeed.</returns>
-        public bool StopRead(out string error)
+        /// <returns>Is succeed to stop read thread?</returns>
+        public bool StopRead()
         {
             try
             {
                 readThread.Abort();
                 ClearReadBytes();
                 IsReadTimeout = false;
-                error = string.Empty;
-
-                Debug.Log("Stop read succeed.");
                 return true;
             }
             catch (Exception e)
             {
-                error = e.Message;
-                Debug.LogError(error);
+                Logger.LogError(e.Message);
                 return false;
             }
         }
@@ -415,13 +365,12 @@ namespace Mogoson.IO.Ports
         /// Start thread to write.
         /// This method will try to open serialport if it is not open.
         /// </summary>
-        /// <param name="error">Error message.</param>
-        /// <returns>Start write thread succeed.</returns>
-        public bool StartWrite(out string error)
+        /// <returns>Is succeed to start write thread?</returns>
+        public bool StartWrite()
         {
             if (!IsOpen)
             {
-                if (!OpenSerialPort(out error))
+                if (!OpenSerialPort())
                     return false;
             }
             if (!IsWriting)
@@ -436,15 +385,11 @@ namespace Mogoson.IO.Ports
                 //Do not do it is ok.
                 serialPort.DiscardOutBuffer();
                 writeThread.Start();
-                error = string.Empty;
-
-                Debug.Log("Start write succeed.");
                 return true;
             }
             catch (Exception e)
             {
-                error = e.Message;
-                Debug.LogError(error);
+                Logger.LogError(e.Message);
                 return false;
             }
         }
@@ -452,23 +397,18 @@ namespace Mogoson.IO.Ports
         /// <summary>
         /// Stop thread of write.
         /// </summary>
-        /// <param name="error">Error message.</param>
-        /// <returns>Stop write thread succeed.</returns>
-        public bool StopWrite(out string error)
+        /// <returns>Is succeed to stop write thread?</returns>
+        public bool StopWrite()
         {
             try
             {
                 writeThread.Abort();
                 IsWriteTimeout = false;
-                error = string.Empty;
-
-                Debug.Log("Stop write succeed.");
                 return true;
             }
             catch (Exception e)
             {
-                error = e.Message;
-                Debug.LogError(error);
+                Logger.LogError(e.Message);
                 return false;
             }
         }

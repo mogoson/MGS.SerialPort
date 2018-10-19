@@ -26,6 +26,7 @@ namespace Mogoson.IO.Ports
     [Serializable]
     public class SerialPortConfig
     {
+        #region Field and Property
         public string portName = "COM1";
         public int baudRate = 9600;
         public Parity parity = Parity.None;
@@ -45,7 +46,9 @@ namespace Mogoson.IO.Ports
         public byte writeTail = 255;
         public int writeCount = 10;
         public int writeCycle = 250;
+        #endregion
 
+        #region Public Method
         /// <summary>
         /// Default Constructor.
         /// </summary>
@@ -62,5 +65,6 @@ namespace Mogoson.IO.Ports
             this.dataBits = dataBits;
             this.stopBits = stopBits;
         }
+        #endregion
     }
 }

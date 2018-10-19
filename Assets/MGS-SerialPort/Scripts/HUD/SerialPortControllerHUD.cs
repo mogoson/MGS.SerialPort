@@ -69,7 +69,7 @@ namespace Mogoson.IO.Ports
                     }
                     catch (Exception e)
                     {
-                        Debug.LogError(e.Message);
+                        Logger.LogError(e.Message);
                     }
                 }
                 Controller.WriteBytes = writeBuffer.ToArray();
@@ -84,24 +84,20 @@ namespace Mogoson.IO.Ports
             GUILayout.BeginHorizontal();
             if (GUILayout.Button("ReInitialize"))
             {
-                var error = string.Empty;
-                Controller.ReInitializeSerialPort(out error);
+                if (Controller.IsOpen)
+                    Controller.CloseSerialPort();
+
+                Controller.InitializeSerialPort();
             }
             if (Controller.IsOpen)
             {
                 if (GUILayout.Button("Close"))
-                {
-                    var error = string.Empty;
-                    Controller.CloseSerialPort(out error);
-                }
+                    Controller.CloseSerialPort();
             }
             else
             {
                 if (GUILayout.Button("Open"))
-                {
-                    var error = string.Empty;
-                    Controller.OpenSerialPort(out error);
-                }
+                    Controller.OpenSerialPort();
             }
             GUILayout.EndHorizontal();
 
@@ -111,18 +107,12 @@ namespace Mogoson.IO.Ports
             if (Controller.IsWriting)
             {
                 if (GUILayout.Button("StopWrite"))
-                {
-                    var error = string.Empty;
-                    Controller.StopWrite(out error);
-                }
+                    Controller.StopWrite();
             }
             else
             {
                 if (GUILayout.Button("StartWrite"))
-                {
-                    var error = string.Empty;
-                    Controller.StartWrite(out error);
-                }
+                    Controller.StartWrite();
             }
             if (GUILayout.Button("Clear"))
                 writeText = string.Empty;
@@ -132,18 +122,12 @@ namespace Mogoson.IO.Ports
             if (Controller.IsReading)
             {
                 if (GUILayout.Button("StopRead"))
-                {
-                    var error = string.Empty;
-                    Controller.StopRead(out error);
-                }
+                    Controller.StopRead();
             }
             else
             {
                 if (GUILayout.Button("StartRead"))
-                {
-                    var error = string.Empty;
-                    Controller.StartRead(out error);
-                }
+                    Controller.StartRead();
             }
             if (GUILayout.Button("Clear"))
                 readText = string.Empty;
@@ -156,10 +140,7 @@ namespace Mogoson.IO.Ports
         private void OnApplicationQuit()
         {
             if (Controller.IsOpen)
-            {
-                var error = string.Empty;
-                Controller.CloseSerialPort(out error);
-            }
+                Controller.CloseSerialPort();
         }
         #endregion
     }

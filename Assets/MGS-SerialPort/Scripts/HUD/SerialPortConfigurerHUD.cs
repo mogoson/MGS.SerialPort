@@ -33,8 +33,7 @@ namespace Mogoson.IO.Ports
         #region Private Method
         private void Start()
         {
-            var error = string.Empty;
-            SerialPortConfigurer.ReadConfig(out config, out error);
+            config = SerialPortConfigurer.ReadConfig();
         }
 
         private void OnGUI()
@@ -70,10 +69,7 @@ namespace Mogoson.IO.Ports
             GUILayout.EndHorizontal();
 
             if (GUILayout.Button("Apply"))
-            {
-                var error = string.Empty;
-                SerialPortConfigurer.WriteConfig(config, out error);
-            }
+                SerialPortConfigurer.WriteConfig(config);
             GUILayout.EndArea();
         }
         #endregion

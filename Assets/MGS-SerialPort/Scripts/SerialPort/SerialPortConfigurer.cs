@@ -51,29 +51,22 @@ namespace Mogoson.IO.Ports
         /// <summary>
         /// Read SerialPortConfig from config file.
         /// </summary>
-        /// <param name="config">Config of serialport.</param>
-        /// <param name="error">Error message.</param>
-        /// <returns>Read config succeed.</returns>
-        public static bool ReadConfig(out SerialPortConfig config, out string error)
+        /// <returns>Config of serialport.</returns>
+        public static SerialPortConfig ReadConfig()
         {
-            config = new SerialPortConfig();
             try
             {
                 var json = File.ReadAllText(ConfigPath);
 #if UNITY_5_3_OR_NEWER
-                config = JsonUtility.FromJson<SerialPortConfig>(json);
+                return JsonUtility.FromJson<SerialPortConfig>(json);
 #else
-                config = JsonMapper.ToObject<SerialPortConfig>(json);
+                return JsonMapper.ToObject<SerialPortConfig>(json);
 #endif
-                error = string.Empty;
-                Debug.Log("Read config succeed.");
-                return true;
             }
             catch (Exception e)
             {
-                error = e.Message;
-                Debug.LogError(error);
-                return false;
+                Logger.LogError(e.Message);
+                return new SerialPortConfig();
             }
         }
 
@@ -81,9 +74,7 @@ namespace Mogoson.IO.Ports
         /// Write SerialPortConfig to config file.
         /// </summary>
         /// <param name="config">Config of serialport.</param>
-        /// <param name="error">Error message.</param>
-        /// <returns>Write config succeed..</returns>
-        public static bool WriteConfig(SerialPortConfig config, out string error)
+        public static void WriteConfig(SerialPortConfig config)
         {
             try
             {
@@ -96,15 +87,10 @@ namespace Mogoson.IO.Ports
 #if UNITY_EDITOR
                 AssetDatabase.Refresh();
 #endif
-                error = string.Empty;
-                Debug.Log("Write config succeed.");
-                return true;
             }
             catch (Exception e)
             {
-                error = e.Message;
-                Debug.LogError(error);
-                return false;
+                Logger.LogError(e.Message);
             }
         }
         #endregion
