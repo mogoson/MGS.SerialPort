@@ -1,8 +1,8 @@
 /*************************************************************************
  *  Copyright © 2018 Mogoson. All rights reserved.
  *------------------------------------------------------------------------
- *  File         :  LoggerConfigurer.cs
- *  Description  :  Configurer of system logger.
+ *  File         :  LogUtilitySettings.cs
+ *  Description  :  Settings of log utility.
  *------------------------------------------------------------------------
  *  Author       :  Mogoson
  *  Version      :  0.1.0
@@ -15,9 +15,9 @@ using UnityEngine;
 namespace Mogoson.IO
 {
     /// <summary>
-    /// Configurer of system logger.
+    /// Settings of log utility.
     /// </summary>
-    static class LoggerConfigurer
+    static class LogUtilitySettings
     {
         #region Field and Property
 #if !UNITY_EDITOR
@@ -30,16 +30,16 @@ namespace Mogoson.IO
 
         #region Public Method
         /// <summary>
-        /// Initialize system logger.
+        /// Initialize log utility.
         /// </summary>
         [RuntimeInitializeOnLoadMethod]
         static void Initialize()
         {
 #if UNITY_EDITOR
-            Logger.Set(UnityDebugger.Instance);
+            LogUtility.Logger = UnityDebugger.Instance;
 #else
             FileLogger.Instance.FilePath = FilePath;
-            Logger.Set(FileLogger.Instance);
+            LogUtility.handler = FileLogger.Instance;
 #endif
         }
         #endregion

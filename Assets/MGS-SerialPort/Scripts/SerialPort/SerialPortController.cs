@@ -166,7 +166,7 @@ namespace Mogoson.IO.Ports
                 }
                 catch (TimeoutException te)
                 {
-                    Logger.Log(te.Message);
+                    LogUtility.Log(te.Message);
                     ClearReadBytes();
                     IsReadTimeout = true;
                     Thread.Sleep(config.readCycle);
@@ -174,7 +174,7 @@ namespace Mogoson.IO.Ports
                 }
                 catch (Exception e)
                 {
-                    Logger.LogError(e.Message);
+                    LogUtility.LogException(e);
                     readThread.Abort();
                     ClearReadBytes();
                     IsReadTimeout = false;
@@ -208,14 +208,14 @@ namespace Mogoson.IO.Ports
                 }
                 catch (TimeoutException te)
                 {
-                    Logger.Log(te.Message);
+                    LogUtility.Log(te.Message);
                     IsWriteTimeout = true;
                     Thread.Sleep(config.writeCycle);
                     continue;
                 }
                 catch (Exception e)
                 {
-                    Logger.LogError(e.Message);
+                    LogUtility.LogException(e);
                     writeThread.Abort();
                     IsWriteTimeout = false;
                     break;
@@ -270,7 +270,7 @@ namespace Mogoson.IO.Ports
             }
             catch (Exception e)
             {
-                Logger.LogError(e.Message);
+                LogUtility.LogException(e);
                 return false;
             }
         }
@@ -299,7 +299,7 @@ namespace Mogoson.IO.Ports
             }
             catch (Exception e)
             {
-                Logger.LogError(e.Message);
+                LogUtility.LogException(e);
                 return false;
             }
         }
@@ -336,7 +336,7 @@ namespace Mogoson.IO.Ports
             }
             catch (Exception e)
             {
-                Logger.LogError(e.Message);
+                LogUtility.LogException(e);
                 return false;
             }
         }
@@ -356,7 +356,7 @@ namespace Mogoson.IO.Ports
             }
             catch (Exception e)
             {
-                Logger.LogError(e.Message);
+                LogUtility.LogException(e);
                 return false;
             }
         }
@@ -389,7 +389,7 @@ namespace Mogoson.IO.Ports
             }
             catch (Exception e)
             {
-                Logger.LogError(e.Message);
+                LogUtility.LogException(e);
                 return false;
             }
         }
@@ -408,7 +408,7 @@ namespace Mogoson.IO.Ports
             }
             catch (Exception e)
             {
-                Logger.LogError(e.Message);
+                LogUtility.LogException(e);
                 return false;
             }
         }

@@ -1,8 +1,8 @@
 ﻿/*************************************************************************
  *  Copyright © 2018 Mogoson. All rights reserved.
  *------------------------------------------------------------------------
- *  File         :  Logger.cs
- *  Description  :  Logger of system.
+ *  File         :  LogUtility.cs
+ *  Description  :  Utility for log output.
  *------------------------------------------------------------------------
  *  Author       :  Mogoson
  *  Version      :  0.1.0
@@ -10,30 +10,23 @@
  *  Description  :  Initial development version.
  *************************************************************************/
 
+using System;
+
 namespace Mogoson.IO
 {
     /// <summary>
-    /// Logger of system.
+    /// Utility for log output.
     /// </summary>
-    public static class Logger
+    public static class LogUtility
     {
         #region Field and Property
         /// <summary>
-        /// Inner logger.
+        /// Logger of utility.
         /// </summary>
-        private static ILogger innerLogger;
+        public static ILogger Logger { set; get; }
         #endregion
 
         #region Public Method
-        /// <summary>
-        /// Set the inner logger.
-        /// </summary>
-        /// <param name="logger">Inner logger.</param>
-        public static void Set(ILogger logger)
-        {
-            innerLogger = logger;
-        }
-
         /// <summary>
         /// Logs a formatted message.
         /// </summary>
@@ -41,8 +34,8 @@ namespace Mogoson.IO
         /// <param name="args">Format arguments.</param>
         public static void Log(string format, params object[] args)
         {
-            if (innerLogger != null)
-                innerLogger.Log(format, args);
+            if (Logger != null)
+                Logger.Log(format, args);
         }
 
         /// <summary>
@@ -52,8 +45,8 @@ namespace Mogoson.IO
         /// <param name="args">Format arguments.</param>
         public static void LogError(string format, params object[] args)
         {
-            if (innerLogger != null)
-                innerLogger.LogError(format, args);
+            if (Logger != null)
+                Logger.LogError(format, args);
         }
 
         /// <summary>
@@ -63,8 +56,18 @@ namespace Mogoson.IO
         /// <param name="args">Format arguments.</param>
         public static void LogWarning(string format, params object[] args)
         {
-            if (innerLogger != null)
-                innerLogger.LogWarning(format, args);
+            if (Logger != null)
+                Logger.LogWarning(format, args);
+        }
+
+        /// <summary>
+        /// Logs a formatted exception message.
+        /// </summary>
+        /// <param name="exception">Runtime exception.</param>
+        public static void LogException(Exception exception)
+        {
+            if (Logger != null)
+                Logger.LogException(exception);
         }
         #endregion
     }

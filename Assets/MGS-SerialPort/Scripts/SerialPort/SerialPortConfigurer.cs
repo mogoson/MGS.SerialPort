@@ -65,7 +65,7 @@ namespace Mogoson.IO.Ports
             }
             catch (Exception e)
             {
-                Logger.LogError(e.Message);
+                LogUtility.LogException(e);
                 return new SerialPortConfig();
             }
         }
@@ -90,7 +90,7 @@ namespace Mogoson.IO.Ports
             }
             catch (Exception e)
             {
-                Logger.LogError(e.Message);
+                LogUtility.LogException(e);
             }
         }
         #endregion

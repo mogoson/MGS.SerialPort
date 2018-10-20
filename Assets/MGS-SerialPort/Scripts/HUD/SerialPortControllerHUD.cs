@@ -69,7 +69,7 @@ namespace Mogoson.IO.Ports
                     }
                     catch (Exception e)
                     {
-                        Logger.LogError(e.Message);
+                        LogUtility.LogException(e);
                     }
                 }
                 Controller.WriteBytes = writeBuffer.ToArray();
