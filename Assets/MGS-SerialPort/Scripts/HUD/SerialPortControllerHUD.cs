@@ -26,8 +26,8 @@ namespace Mogoson.IO.Ports
     public class SerialPortControllerHUD : MonoBehaviour
     {
         #region Field and Property
-        public float xOffset = 10;
-        public float yOffset = 10;
+        public float top = 10;
+        public float left = 10;
 
         private string readText = string.Empty;
         private string writeText = string.Empty;
@@ -69,7 +69,7 @@ namespace Mogoson.IO.Ports
                     }
                     catch (Exception e)
                     {
-                        LogUtility.LogException(e);
+                        //LogUtility.LogException(e);
                     }
                 }
                 Controller.WriteBytes = writeBuffer.ToArray();
@@ -78,26 +78,31 @@ namespace Mogoson.IO.Ports
 
         private void OnGUI()
         {
-            var rect = new Rect(xOffset, yOffset, 180, 220);
+            var rect = new Rect(left, top, 180, 220);
             GUILayout.BeginArea(rect, "Controller", "Window");
 
             GUILayout.BeginHorizontal();
             if (GUILayout.Button("ReInitialize"))
             {
                 if (Controller.IsOpen)
+                {
                     Controller.CloseSerialPort();
-
+                }
                 Controller.InitializeSerialPort();
             }
             if (Controller.IsOpen)
             {
                 if (GUILayout.Button("Close"))
+                {
                     Controller.CloseSerialPort();
+                }
             }
             else
             {
                 if (GUILayout.Button("Open"))
+                {
                     Controller.OpenSerialPort();
+                }
             }
             GUILayout.EndHorizontal();
 
@@ -107,30 +112,42 @@ namespace Mogoson.IO.Ports
             if (Controller.IsWriting)
             {
                 if (GUILayout.Button("StopWrite"))
+                {
                     Controller.StopWrite();
+                }
             }
             else
             {
                 if (GUILayout.Button("StartWrite"))
+                {
                     Controller.StartWrite();
+                }
             }
             if (GUILayout.Button("Clear"))
+            {
                 writeText = string.Empty;
+            }
             GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
             if (Controller.IsReading)
             {
                 if (GUILayout.Button("StopRead"))
+                {
                     Controller.StopRead();
+                }
             }
             else
             {
                 if (GUILayout.Button("StartRead"))
+                {
                     Controller.StartRead();
+                }
             }
             if (GUILayout.Button("Clear"))
+            {
                 readText = string.Empty;
+            }
             GUILayout.EndHorizontal();
 
             GUILayout.TextArea(readText, GUILayout.ExpandHeight(true));
@@ -140,7 +157,9 @@ namespace Mogoson.IO.Ports
         private void OnApplicationQuit()
         {
             if (Controller.IsOpen)
+            {
                 Controller.CloseSerialPort();
+            }
         }
         #endregion
     }

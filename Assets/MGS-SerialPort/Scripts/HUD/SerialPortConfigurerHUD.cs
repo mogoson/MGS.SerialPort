@@ -24,8 +24,8 @@ namespace Mogoson.IO.Ports
     public class SerialPortConfigurerHUD : MonoBehaviour
     {
         #region Field and Property
-        public float xOffset = 10;
-        public float yOffset = 10;
+        public float top = 10;
+        public float left = 10;
 
         private SerialPortConfig config;
         #endregion
@@ -38,7 +38,7 @@ namespace Mogoson.IO.Ports
 
         private void OnGUI()
         {
-            var rect = new Rect(xOffset, yOffset, 180, 180);
+            var rect = new Rect(left, top, 180, 180);
             GUILayout.BeginArea(rect, "Configurer", "Window");
 
             GUILayout.BeginHorizontal();
@@ -69,7 +69,9 @@ namespace Mogoson.IO.Ports
             GUILayout.EndHorizontal();
 
             if (GUILayout.Button("Apply"))
+            {
                 SerialPortConfigurer.WriteConfig(config);
+            }
             GUILayout.EndArea();
         }
         #endregion
