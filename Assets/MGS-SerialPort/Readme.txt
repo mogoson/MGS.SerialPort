@@ -44,9 +44,6 @@
   [Config]
     The config file in the path "StreamingAssets\Config\SerialPortConfig.json".
 
-    ReadBufferSize should be try to set as a small value to reduce memory
-    spending, example 512.
-
     ReadCount not include ReadHead and ReadTail, example, the ReadCount
     of a bytes frame "FE 00 01 00 01 00 01 00 01 00 01 FF" is 10.
 

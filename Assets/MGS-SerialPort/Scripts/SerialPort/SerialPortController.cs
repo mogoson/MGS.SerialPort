@@ -32,15 +32,29 @@ namespace Mogoson.IO.Ports
         /// <summary>
         /// Bytes read from serialport.
         /// </summary>
-        public byte[] ReadBytes { get { return readBytes; } }
+        public byte[] ReadBytes
+        {
+            get
+            {
+                lock (readBytes.SyncRoot)
+                {
+                    return readBytes.Clone() as byte[];
+                }
+            }
+        }
 
         /// <summary>
         /// Bytes write to serialport.
         /// </summary>
         public byte[] WriteBytes
         {
-            set { value.CopyTo(writeBytes, 0); }
-            get { return writeBytes; }
+            set
+            {
+                lock (writeBytes.SyncRoot)
+                {
+                    value.CopyTo(writeBytes, 0);
+                }
+            }
         }
 
         /// <summary>
@@ -113,17 +127,15 @@ namespace Mogoson.IO.Ports
         /// </summary>
         private void ReadBytesFromBuffer()
         {
-            //SerialPort.BytesToRead can not get in Unity.
-            //Try to read all bytes of the SerialPort ReadBuffer to avoid delay.
-            //So SerialPort.ReadBufferSize should be try to set small in the config file to reduce memory spending.
-            var readBuffer = new byte[serialPort.ReadBufferSize];
-            var readCount = 0;
-            var index = 0;
-
             //Frame bytes length is config.readCount + 2(readHead + readTail).
             var frameLength = config.readCount + 2;
             var frameBuffer = new List<byte>();
 
+            //SerialPort.BytesToRead can not get in Unity.
+            //Try to read more bytes of the SerialPort ReadBuffer to avoid delay.
+            var readBuffer = new byte[frameLength * 3];
+            var readCount = 0;
+            var index = 0;
             while (true)
             {
                 try
@@ -150,14 +162,18 @@ namespace Mogoson.IO.Ports
                         {
                             //Find readTail, save the intact bytes to readBytes.
                             if (frameBuffer[frameLength - 1] == config.readTail)
+                            {
                                 readBytes = frameBuffer.GetRange(1, config.readCount).ToArray();
+                            }
 
                             //Remove the obsolete or invalid frame bytes.
                             frameBuffer.RemoveRange(0, frameLength);
                         }
                         else
+                        {
                             //Remove the invalid byte.
                             frameBuffer.RemoveAt(0);
+                        }
                     }
 
                     //Clear read timeout flag.
@@ -174,7 +190,7 @@ namespace Mogoson.IO.Ports
                 }
                 catch (Exception e)
                 {
-                    LogUtility.LogException(e);
+                    LogUtility.LogError(e.Message);
                     readThread.Abort();
                     ClearReadBytes();
                     IsReadTimeout = false;
@@ -194,7 +210,6 @@ namespace Mogoson.IO.Ports
             //Add writeHead and writeTail to writeBuffer.
             writeBuffer[0] = config.writeHead;
             writeBuffer[config.writeCount + 1] = config.writeTail;
-
             while (true)
             {
                 //Add writeBytes to writeBuffer.
@@ -215,7 +230,7 @@ namespace Mogoson.IO.Ports
                 }
                 catch (Exception e)
                 {
-                    LogUtility.LogException(e);
+                    LogUtility.LogError(e.Message);
                     writeThread.Abort();
                     IsWriteTimeout = false;
                     break;
@@ -270,7 +285,7 @@ namespace Mogoson.IO.Ports
             }
             catch (Exception e)
             {
-                LogUtility.LogException(e);
+                LogUtility.LogError(e.Message);
                 return false;
             }
         }
@@ -285,12 +300,16 @@ namespace Mogoson.IO.Ports
             if (IsReading)
             {
                 if (!StopRead())
+                {
                     return false;
+                }
             }
             if (IsWriting)
             {
                 if (!StopWrite())
+                {
                     return false;
+                }
             }
             try
             {
@@ -299,7 +318,7 @@ namespace Mogoson.IO.Ports
             }
             catch (Exception e)
             {
-                LogUtility.LogException(e);
+                LogUtility.LogError(e.Message);
                 return false;
             }
         }
@@ -318,7 +337,9 @@ namespace Mogoson.IO.Ports
             if (!IsOpen)
             {
                 if (!OpenSerialPort())
+                {
                     return false;
+                }
             }
             if (!IsReading)
             {
@@ -336,7 +357,7 @@ namespace Mogoson.IO.Ports
             }
             catch (Exception e)
             {
-                LogUtility.LogException(e);
+                LogUtility.LogError(e.Message);
                 return false;
             }
         }
@@ -356,7 +377,7 @@ namespace Mogoson.IO.Ports
             }
             catch (Exception e)
             {
-                LogUtility.LogException(e);
+                LogUtility.LogError(e.Message);
                 return false;
             }
         }
@@ -371,7 +392,9 @@ namespace Mogoson.IO.Ports
             if (!IsOpen)
             {
                 if (!OpenSerialPort())
+                {
                     return false;
+                }
             }
             if (!IsWriting)
             {
@@ -389,7 +412,7 @@ namespace Mogoson.IO.Ports
             }
             catch (Exception e)
             {
-                LogUtility.LogException(e);
+                LogUtility.LogError(e.Message);
                 return false;
             }
         }
@@ -408,7 +431,7 @@ namespace Mogoson.IO.Ports
             }
             catch (Exception e)
             {
-                LogUtility.LogException(e);
+                LogUtility.LogError(e.Message);
                 return false;
             }
         }
