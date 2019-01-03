@@ -1,7 +1,7 @@
 ﻿==========================================================================
   Copyright © 2017-2018 Mogoson. All rights reserved.
   Name: MGS-SerialPort
-  Author: Mogoson   Version: 0.2.1   Date: 12/30/2018
+  Author: Mogoson   Version: 0.3.0   Date: 12/30/2018
 ==========================================================================
   [Summary]
     Unity communicate with serialport.
