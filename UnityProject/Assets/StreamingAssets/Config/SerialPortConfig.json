@@ -1,0 +1,1 @@
+{"portName":"COM1","baudRate":9600,"parity":0,"dataBits":8,"stopBits":1,"readBufferSize":1024,"readTimeout":500,"readHead":254,"readTail":255,"readCount":10,"readCycle":250,"writeBufferSize":1024,"writeTimeout":500,"writeHead":254,"writeTail":255,"writeCount":10,"writeCycle":250}

@@ -21,18 +21,13 @@
 - Current Unity can not execute the "SerialPort.DiscardInBuffer" method effectively.
 - Current Unity can not execute the "SerialPort.DiscardOutBuffer" method effectively.
 
-## Achieve
-- SerialPortConfig : Config of serialport parameters.
-- SerialPortConfigurer : Read config from local file and write config to file.
-- SerialPortController : Synchronous read and write serialport data.
-
 ## Demo
 - Demos in the path "MGS-SerialPort\Scenes" provide reference to you.
 
 ## Preview
 - Serialport
 
-![Serialport](./Attachments/README_Image/Serialport.png)
+![Serialport](./Attachment/README_Image/Serialport.png)
 
 ## Contact
 - If you have any questions, feel free to contact me at mogoson@outlook.com.

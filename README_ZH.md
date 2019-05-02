@@ -62,18 +62,13 @@
 #### 写入
 - WriteBytes前面添加WiteHead标记，后面添加WriteTail标记，将其写入串口。
 
-## 实现
-- SerialPortConfig：结构化存储串口参数配置。
-- SerialPortConfigurer：串口参数配置写入本地文件，从文件读取配置。
-- SerialPortController：串口同步读取，持续写入。
-
 ## 案例
 - “MGS-SerialPort\Scenes”目录下存有上述功能的演示案例，供读者参考。
 
 ## 预览
 - Serialport
 
-![Serialport](./Attachments/README_Image/Serialport.png)
+![Serialport](./Attachment/README_Image/Serialport.png)
 
 ## 联系
 - 如果你有任何问题或者建议，欢迎通过mogoson@outlook.com联系我。
