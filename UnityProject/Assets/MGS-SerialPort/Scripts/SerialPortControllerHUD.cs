@@ -68,9 +68,9 @@ namespace MGS.IO.Ports
                     {
                         writeBuffer.Add(byte.Parse(@byte.Trim(), NumberStyles.HexNumber));
                     }
-                    catch (Exception e)
+                    catch (Exception ex)
                     {
-                        LogUtility.LogError(e.Message);
+                        LogUtility.LogError(0, ex.Message);
                     }
                 }
                 Controller.WriteBytes = writeBuffer.ToArray();
@@ -80,6 +80,7 @@ namespace MGS.IO.Ports
         private void OnGUI()
         {
             var rect = new Rect(left, top, 180, 220);
+            var error = string.Empty;
             GUILayout.BeginArea(rect, "Controller", "Window");
 
             GUILayout.BeginHorizontal();
@@ -87,22 +88,22 @@ namespace MGS.IO.Ports
             {
                 if (Controller.IsOpen)
                 {
-                    Controller.CloseSerialPort();
+                    Controller.CloseSerialPort(out error);
                 }
-                Controller.InitializeSerialPort();
+                Controller.InitializeSerialPort(out error);
             }
             if (Controller.IsOpen)
             {
                 if (GUILayout.Button("Close"))
                 {
-                    Controller.CloseSerialPort();
+                    Controller.CloseSerialPort(out error);
                 }
             }
             else
             {
                 if (GUILayout.Button("Open"))
                 {
-                    Controller.OpenSerialPort();
+                    Controller.OpenSerialPort(out error);
                 }
             }
             GUILayout.EndHorizontal();
@@ -114,14 +115,14 @@ namespace MGS.IO.Ports
             {
                 if (GUILayout.Button("StopWrite"))
                 {
-                    Controller.StopWrite();
+                    Controller.StopWrite(out error);
                 }
             }
             else
             {
                 if (GUILayout.Button("StartWrite"))
                 {
-                    Controller.StartWrite();
+                    Controller.StartWrite(out error);
                 }
             }
             if (GUILayout.Button("Clear"))
@@ -135,14 +136,14 @@ namespace MGS.IO.Ports
             {
                 if (GUILayout.Button("StopRead"))
                 {
-                    Controller.StopRead();
+                    Controller.StopRead(out error);
                 }
             }
             else
             {
                 if (GUILayout.Button("StartRead"))
                 {
-                    Controller.StartRead();
+                    Controller.StartRead(out error);
                 }
             }
             if (GUILayout.Button("Clear"))
@@ -159,7 +160,8 @@ namespace MGS.IO.Ports
         {
             if (Controller.IsOpen)
             {
-                Controller.CloseSerialPort();
+                var error = string.Empty;
+                Controller.CloseSerialPort(out error);
             }
         }
         #endregion

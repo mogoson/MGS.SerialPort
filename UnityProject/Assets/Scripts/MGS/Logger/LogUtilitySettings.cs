@@ -25,7 +25,7 @@ namespace MGS.Logger
         /// <summary>
         /// Path of log file.
         /// </summary>
-        static readonly string FilePath = Application.persistentDataPath + "/Log.txt";
+        static readonly string LogPath = Application.persistentDataPath + "/Log/";
 #endif
         #endregion
 
@@ -39,7 +39,7 @@ namespace MGS.Logger
 #if UNITY_EDITOR
             LogUtility.Logger = UnityDebugger.Instance;
 #else
-            FileLogger.Instance.FilePath = FilePath;
+            FileLogger.Instance.LogPath = LogPath;
             LogUtility.Logger = FileLogger.Instance;
 #endif
         }

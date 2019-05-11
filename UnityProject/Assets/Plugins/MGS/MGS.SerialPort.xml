@@ -114,22 +114,30 @@
             Configurer of SerialPort.
             </summary>
         </member>
-        <member name="F:MGS.IO.Ports.SerialPortConfigurer.ConfigPath">
+        <member name="P:MGS.IO.Ports.SerialPortConfigurer.ConfigPath">
             <summary>
             Full path of serialport config file.
             </summary>
         </member>
-        <member name="M:MGS.IO.Ports.SerialPortConfigurer.ReadConfig">
+        <member name="M:MGS.IO.Ports.SerialPortConfigurer.#ctor">
+            <summary>
+            Constructor.
+            </summary>
+        </member>
+        <member name="M:MGS.IO.Ports.SerialPortConfigurer.ReadConfig(System.String@)">
             <summary>
             Read SerialPortConfig from config file.
             </summary>
+            <param name="error">Error message.</param>
             <returns>Config of serialport.</returns>
         </member>
-        <member name="M:MGS.IO.Ports.SerialPortConfigurer.WriteConfig(MGS.IO.Ports.SerialPortConfig)">
+        <member name="M:MGS.IO.Ports.SerialPortConfigurer.WriteConfig(MGS.IO.Ports.SerialPortConfig,System.String@)">
             <summary>
             Write SerialPortConfig to config file.
             </summary>
             <param name="config">Config of serialport.</param>
+            <param name="error">Error message.</param>
+            <returns>succeed?</returns>
         </member>
         <member name="T:MGS.IO.Ports.SerialPortController">
             <summary>
@@ -221,48 +229,56 @@
             Clear the elements of ReadBytes to default value(zero).
             </summary>
         </member>
-        <member name="M:MGS.IO.Ports.SerialPortController.InitializeSerialPort">
+        <member name="M:MGS.IO.Ports.SerialPortController.InitializeSerialPort(System.String@)">
             <summary>
             Initialize serialport.
             </summary>
+            <param name="error">Error message.</param>
+            <returns>Initialize serialport use config file succeed?</returns>
         </member>
-        <member name="M:MGS.IO.Ports.SerialPortController.OpenSerialPort">
+        <member name="M:MGS.IO.Ports.SerialPortController.OpenSerialPort(System.String@)">
             <summary>
             Open serialport.
             </summary>
+            <param name="error">Error message.</param>
             <returns>Is succeed to open serialport?</returns>
         </member>
-        <member name="M:MGS.IO.Ports.SerialPortController.CloseSerialPort">
+        <member name="M:MGS.IO.Ports.SerialPortController.CloseSerialPort(System.String@)">
             <summary>
             Close serialport.
             This method will try abort thread if it is alive.
             </summary>
+            <param name="error">Error message.</param>
             <returns>Is succeed to close serialport?</returns>
         </member>
-        <member name="M:MGS.IO.Ports.SerialPortController.StartRead">
+        <member name="M:MGS.IO.Ports.SerialPortController.StartRead(System.String@)">
             <summary>
             Start thread to read.
             This method will try to open serialport if it is not open.
             </summary>
+            <param name="error">Error message.</param>
             <returns>Is succeed to start read thread?</returns>
         </member>
-        <member name="M:MGS.IO.Ports.SerialPortController.StopRead">
+        <member name="M:MGS.IO.Ports.SerialPortController.StopRead(System.String@)">
             <summary>
             Stop thread of read.
             </summary>
+            <param name="error">Error message.</param>
             <returns>Is succeed to stop read thread?</returns>
         </member>
-        <member name="M:MGS.IO.Ports.SerialPortController.StartWrite">
+        <member name="M:MGS.IO.Ports.SerialPortController.StartWrite(System.String@)">
             <summary>
             Start thread to write.
             This method will try to open serialport if it is not open.
             </summary>
+            <param name="error">Error message.</param>
             <returns>Is succeed to start write thread?</returns>
         </member>
-        <member name="M:MGS.IO.Ports.SerialPortController.StopWrite">
+        <member name="M:MGS.IO.Ports.SerialPortController.StopWrite(System.String@)">
             <summary>
             Stop thread of write.
             </summary>
+            <param name="error">Error message.</param>
             <returns>Is succeed to stop write thread?</returns>
         </member>
         <member name="M:MGS.IO.Ports.SerialPortController.ClearWriteBytes">

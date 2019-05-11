@@ -230,6 +230,18 @@
             Single instance of the specified type T.
             </summary>
         </member>
+        <member name="T:MGS.Common.IO.DirectoryUtility">
+            <summary>
+            Utility for directory.
+            </summary>
+        </member>
+        <member name="M:MGS.Common.IO.DirectoryUtility.RequirePath(System.String)">
+            <summary>
+            Require the directory path exist.
+            </summary>
+            <param name="path">Directory path.</param>
+            <returns>Create directory path succeed?</returns>
+        </member>
         <member name="T:MGS.Common.IO.FileUtility">
             <summary>
             Utility for file.
@@ -264,7 +276,12 @@
             Loggger for log to local file.
             </summary>
         </member>
-        <member name="P:MGS.Common.Logger.FileLogger.FilePath">
+        <member name="P:MGS.Common.Logger.FileLogger.LogPath">
+            <summary>
+            Path of log file.
+            </summary>
+        </member>
+        <member name="F:MGS.Common.Logger.FileLogger.logPath">
             <summary>
             Path of log file.
             </summary>
@@ -274,32 +291,36 @@
             Constructor.
             </summary>
         </member>
-        <member name="M:MGS.Common.Logger.FileLogger.LogToFile(System.String,System.String,System.Object[])">
+        <member name="M:MGS.Common.Logger.FileLogger.LogToFile(System.String,System.Int32,System.String,System.Object[])">
             <summary>
             Logs a formatted message to local file.
             </summary>
             <param name="tag">Tag of log message.</param>
+            <param name="level">Level of log message.</param>
             <param name="format">A composite format string.</param>
             <param name="args">Format arguments.</param>
         </member>
-        <member name="M:MGS.Common.Logger.FileLogger.Log(System.String,System.Object[])">
+        <member name="M:MGS.Common.Logger.FileLogger.Log(System.Int32,System.String,System.Object[])">
             <summary>
             Logs a formatted message to local file.
             </summary>
+            <param name="level">Level of log message.</param>
             <param name="format">A composite format string.</param>
             <param name="args">Format arguments.</param>
         </member>
-        <member name="M:MGS.Common.Logger.FileLogger.LogError(System.String,System.Object[])">
+        <member name="M:MGS.Common.Logger.FileLogger.LogError(System.Int32,System.String,System.Object[])">
             <summary>
             Logs a formatted error message to local file.
             </summary>
+            <param name="level">Level of error message.</param>
             <param name="format">A composite format string.</param>
             <param name="args">Format arguments.</param>
         </member>
-        <member name="M:MGS.Common.Logger.FileLogger.LogWarning(System.String,System.Object[])">
+        <member name="M:MGS.Common.Logger.FileLogger.LogWarning(System.Int32,System.String,System.Object[])">
             <summary>
             Logs a formatted warning message to local file.
             </summary>
+            <param name="level">Level of warning message.</param>
             <param name="format">A composite format string.</param>
             <param name="args">Format arguments.</param>
         </member>
@@ -308,24 +329,27 @@
             Interface of logger.
             </summary>
         </member>
-        <member name="M:MGS.Common.Logger.ILogger.Log(System.String,System.Object[])">
+        <member name="M:MGS.Common.Logger.ILogger.Log(System.Int32,System.String,System.Object[])">
             <summary>
             Logs a formatted message.
             </summary>
+            <param name="level">Level of log message.</param>
             <param name="format">A composite format string.</param>
             <param name="args">Format arguments.</param>
         </member>
-        <member name="M:MGS.Common.Logger.ILogger.LogError(System.String,System.Object[])">
+        <member name="M:MGS.Common.Logger.ILogger.LogError(System.Int32,System.String,System.Object[])">
             <summary>
             Logs a formatted error message.
             </summary>
+            <param name="level">Level of error message.</param>
             <param name="format">A composite format string.</param>
             <param name="args">Format arguments.</param>
         </member>
-        <member name="M:MGS.Common.Logger.ILogger.LogWarning(System.String,System.Object[])">
+        <member name="M:MGS.Common.Logger.ILogger.LogWarning(System.Int32,System.String,System.Object[])">
             <summary>
             Logs a formatted warning message.
             </summary>
+            <param name="level">Level of warning message.</param>
             <param name="format">A composite format string.</param>
             <param name="args">Format arguments.</param>
         </member>
@@ -339,24 +363,27 @@
             Logger of utility.
             </summary>
         </member>
-        <member name="M:MGS.Common.Logger.LogUtility.Log(System.String,System.Object[])">
+        <member name="M:MGS.Common.Logger.LogUtility.Log(System.Int32,System.String,System.Object[])">
             <summary>
             Logs a formatted message.
             </summary>
+            <param name="level">Level of log message.</param>
             <param name="format">A composite format string.</param>
             <param name="args">Format arguments.</param>
         </member>
-        <member name="M:MGS.Common.Logger.LogUtility.LogError(System.String,System.Object[])">
+        <member name="M:MGS.Common.Logger.LogUtility.LogError(System.Int32,System.String,System.Object[])">
             <summary>
             Logs a formatted error message.
             </summary>
+            <param name="level">Level of error message.</param>
             <param name="format">A composite format string.</param>
             <param name="args">Format arguments.</param>
         </member>
-        <member name="M:MGS.Common.Logger.LogUtility.LogWarning(System.String,System.Object[])">
+        <member name="M:MGS.Common.Logger.LogUtility.LogWarning(System.Int32,System.String,System.Object[])">
             <summary>
             Logs a formatted warning message.
             </summary>
+            <param name="level">Level of warning message.</param>
             <param name="format">A composite format string.</param>
             <param name="args">Format arguments.</param>
         </member>

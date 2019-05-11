@@ -33,7 +33,12 @@ namespace MGS.IO.Ports
         #region Private Method
         private void Start()
         {
-            config = SerialPortConfigurer.ReadConfig();
+            var error = string.Empty;
+            config = SerialPortConfigurer.Instance.ReadConfig(out error);
+            if (config == null)
+            {
+                config = new SerialPortConfig();
+            }
         }
 
         private void OnGUI()
@@ -70,7 +75,8 @@ namespace MGS.IO.Ports
 
             if (GUILayout.Button("Apply"))
             {
-                SerialPortConfigurer.WriteConfig(config);
+                var error = string.Empty;
+                SerialPortConfigurer.Instance.WriteConfig(config, out error);
             }
             GUILayout.EndArea();
         }
