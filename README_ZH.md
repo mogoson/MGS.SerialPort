@@ -12,7 +12,7 @@
 - .Net Framework 2.0（项目打包设置“Build Settings -> Player Settings -> Other Settings”
   ->“Api Compatibility Level” 项设置为 ".NET 2.0"）。
 
-## 问题
+## 背景
 - Unity目前不能正常在Update，FixedUpdate等事件函数中直接读取串口数据，运行程序卡顿。
 - Unity目前没有实现“SerialPort.ReceivedBytesThreshold”属性设置，抛出没有实现异常。
 - Unity目前不能正常触发“SerialPort.DataReceived”事件，无异常抛出，无响应。
@@ -61,6 +61,11 @@
 
 #### 写入
 - WriteBytes前面添加WiteHead标记，后面添加WriteTail标记，将其写入串口。
+
+## 实现
+- 结构化存储串口参数配置。
+- 串口参数配置写入本地文件，从文件读取配置。
+- 串口同步读取，持续写入。
 
 ## 案例
 - “MGS-SerialPort\Scenes”目录下存有上述功能的演示案例，供读者参考。

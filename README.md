@@ -13,13 +13,18 @@
 - .Net Framework 2.0(Set the "Api Compatibility Level" as ".NET 2.0". Find in the path
   "Build Settings -> Player Settings -> Other Settings").
 
-## Issue
+## Background
 - Current Unity can not read serialport data in "Update" or "FixedUpdate" method.
 - Current Unity not implemented the "SerialPort.ReceivedBytesThreshold" property.
 - Current Unity can not callback the "SerialPort.DataReceived" event.
 - Current Unity can not read the "SerialPort.BytesToRead" property.
 - Current Unity can not execute the "SerialPort.DiscardInBuffer" method effectively.
 - Current Unity can not execute the "SerialPort.DiscardOutBuffer" method effectively.
+
+## Achieve
+- Config of serialport parameters.
+- Read config from local file and write config to file.
+- Synchronous read and write serialport data.
 
 ## Demo
 - Demos in the path "MGS-SerialPort\Scenes" provide reference to you.
