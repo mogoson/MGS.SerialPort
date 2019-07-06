@@ -264,11 +264,12 @@
             <param name="pageIndex">Index of page.</param>
             <returns>Index page bytes.</returns>
         </member>
-        <member name="M:MGS.Common.IO.FileUtility.ReadAllLines(System.String)">
+        <member name="M:MGS.Common.IO.FileUtility.ReadAllLines(System.String,System.Text.Encoding)">
             <summary>
             Read all lines of file.
             </summary>
             <param name="filePath">Path of target file.</param>
+            <param name="encoding">Encoding of target file.</param>
             <returns>All lines from file.</returns>
         </member>
         <member name="T:MGS.Common.Logger.FileLogger">
