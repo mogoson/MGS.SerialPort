@@ -8,7 +8,7 @@
 - Serialport synchronous read and write data; parameters of serialport config in local file.
 
 ## Environment
-- Unity 5.0 or above(If Unity 5.3 or higher version, the Json plugin(LitJson.dll) can be delete).
+- Unity 5.3 or above.
 
 - .Net Framework 2.0(Set the "Api Compatibility Level" as ".NET 2.0". Find in the path
   "Build Settings -> Player Settings -> Other Settings").

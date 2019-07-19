@@ -11,7 +11,7 @@
     config in local file.
 --------------------------------------------------------------------------
   [Environment]
-    Unity 5.0 or above.
+    Unity 5.3 or above.
     .Net Framework 2.0.
 
     If namespace error, set the "Api Compatibility Level" as ".NET 2.0".

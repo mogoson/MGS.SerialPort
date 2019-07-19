@@ -8,7 +8,7 @@
 - 串口数据同步读取，持续写入；串口参数通过本地文件配置（便于安装调试和后续维护）。
 
 ## 环境
-- Unity 5.0 或更高版本（如果是Unity 5.3 或者更高版本，Json插件LitJson.dll可以删除）。
+- Unity 5.3 或更高版本。
 - .Net Framework 2.0（项目打包设置“Build Settings -> Player Settings -> Other Settings”
   ->“Api Compatibility Level” 项设置为 ".NET 2.0"）。
 
