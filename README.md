@@ -1,10 +1,11 @@
-﻿# MGS-SerialPort
+# MGS.SerialPort
 
 ## Summary
 - Unity communicate with serialport.
 
 ## Demand
-- Serialport synchronous read and write data; parameters of serialport config in local file.
+- Serialport asynchronous read and write data; 
+- parameters of serialport config in local file.
 
 ## Environment
 - Unity 5.3 or above.
@@ -20,18 +21,12 @@
 - Current Unity can not execute the "SerialPort.DiscardInBuffer" method effectively.
 - Current Unity can not execute the "SerialPort.DiscardOutBuffer" method effectively.
 
-## Achieve
-- Config serialport parameters in local file.
-- Read config from local file and write config to file.
-- Read byte data from serialport and write byte data to serialport.
+## Design
 
-## Demo
-- Demos in the path "MGS-SerialPort\Scenes" provide reference to you.
+- Config SerialPort parameters in local file.
+- Thread to read and write data buffer to SerialPort continued.
+- Mark data Head and Tail to recognize data frame.
 
-## Preview
-- Serialport
+------
 
-![Serialport](./Attachment/README_Image/Serialport.png)
-
-## Contact
-- If you have any questions, feel free to contact me at mogoson@outlook.com.
+Copyright © 2022 Mogoson.	mogoson@outlook.com
