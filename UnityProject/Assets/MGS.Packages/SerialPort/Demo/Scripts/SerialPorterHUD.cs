@@ -30,6 +30,7 @@ namespace MGS.IO.Ports.Demo
 
         private string readText = string.Empty;
         private string writeText = string.Empty;
+        private string errorText = string.Empty;
 
         private const string SPACE = "\x0020";
         private readonly string[] SEPARATER = { SPACE };
@@ -38,6 +39,11 @@ namespace MGS.IO.Ports.Demo
         #endregion
 
         #region Private Method
+        private void Start()
+        {
+            Handler.OnError += (e) => errorText = e.Message;
+        }
+
         private void Update()
         {
             if (Handler.IsReading)
@@ -70,7 +76,7 @@ namespace MGS.IO.Ports.Demo
 
         private void OnGUI()
         {
-            var rect = new Rect(left, top, 180, 220);
+            var rect = new Rect(left, top, 180, 250);
             var error = string.Empty;
             GUILayout.BeginArea(rect, "Controller", "Window");
 
@@ -119,6 +125,7 @@ namespace MGS.IO.Ports.Demo
             if (GUILayout.Button("Clear"))
             {
                 writeText = string.Empty;
+                errorText = string.Empty;
             }
             GUILayout.EndHorizontal();
 
@@ -140,10 +147,12 @@ namespace MGS.IO.Ports.Demo
             if (GUILayout.Button("Clear"))
             {
                 readText = string.Empty;
+                errorText = string.Empty;
             }
             GUILayout.EndHorizontal();
 
             GUILayout.TextArea(readText, GUILayout.ExpandHeight(true));
+            GUILayout.TextArea(errorText, GUILayout.Height(40));
             GUILayout.EndArea();
         }
 
