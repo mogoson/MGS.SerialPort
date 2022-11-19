@@ -27,6 +27,28 @@
 - Thread to read and write data buffer to SerialPort continued.
 - Mark data Head and Tail to recognize data frame.
 
+## Usage
+
+```C#
+//Read size bytes from serialport buffer once.
+SerialPortAPI.SerialPorter.Read(size);
+
+//Write bytes to serialport buffer once.
+SerialPortAPI.SerialPorter.Write(bytes);
+
+//Begin read bytes form SerialPort (Continued).
+SerialPortAPI.SerialPorter.BeginRead();
+
+//End read bytes form SerialPort.
+SerialPortAPI.SerialPorter.EndRead();
+
+//Begin write bytes to SerialPort (Continued).
+SerialPortAPI.SerialPorter.BeginWrite();
+
+//End write bytes to SerialPort.
+SerialPortAPI.SerialPorter.EndWrite();
+```
+
 ------
 
 Copyright © 2022 Mogoson.	mogoson@outlook.com
