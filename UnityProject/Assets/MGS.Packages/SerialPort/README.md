@@ -7,6 +7,10 @@
 - Serialport asynchronous read and write data; 
 - parameters of serialport config in local file.
 
+## Version
+
+- 2.0.1
+
 ## Environment
 - Unity 5.3 or above.
 
