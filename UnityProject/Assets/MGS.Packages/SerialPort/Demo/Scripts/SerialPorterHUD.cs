@@ -77,7 +77,6 @@ namespace MGS.IO.Ports.Demo
         private void OnGUI()
         {
             var rect = new Rect(left, top, 180, 250);
-            var error = string.Empty;
             GUILayout.BeginArea(rect, "Controller", "Window");
 
             GUILayout.BeginHorizontal();
